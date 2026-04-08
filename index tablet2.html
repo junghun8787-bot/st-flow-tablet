@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ShinTony Timer v5.7.0 (Bottom Nav Edition)</title>
+
+<style>
+/* ==========================================================================
+   [ CSS 목차 ]
+   1. FONTS & VARIABLES
+   2. COLOR THEMES
+   3. RESET & BASE (하단 네비게이션 대응 레이아웃)
+   4. HEADER & BOTTOM NAV (신규: 하단 고정 탭 바)
+   5. UTILITIES, COMPONENTS & SMART ACCORDION
+   6. VIEW: ROSTER
+   7. VIEW: TIMER
+   8. VIEW: LOG & SETTINGS
+   9. FOOTER
+========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. FONTS & VARIABLES
+-------------------------------------------------------------------------- */
+@import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;900&family=JetBrains+Mono:wght@700;800&family=Montserrat:wght@500;700;900&display=swap');
+
+:root {
+    --bg-main: #f8fafc; --bg-card: #ffffff; --accent: #3b82f6; 
+    --text-main: #1e293b; --text-muted: #64748b;
+    --brand-success: #10b981; --brand-danger: #ef4444; --time-color: #0f172a; 
+    --border: #cbd5e1; --btn-bg: #f1f5f9; --log-bg: rgba(0,0,0,0.03); 
+    --custom-name-color: #0f172a; --custom-name-shadow: none;
+    
+    --shadow-outer: 6px 6px 14px rgba(0, 0, 0, 0.08), -6px -6px 14px rgba(255, 255, 255, 0.9);
+    --shadow-inner: inset 4px 4px 8px rgba(0,0,0,0.08), inset -4px -4px 8px rgba(255,255,255,0.8);
+    --shadow-pop: 8px 8px 18px rgba(0,0,0,0.1), -8px -8px 18px rgba(255,255,255,0.9);
+    --shadow-btn: 4px 4px 10px rgba(0,0,0,0.08), -4px -4px 10px rgba(255,255,255,0.9);
+    --box-gradient: linear-gradient(145deg, rgba(255,255,255,0.7), rgba(0,0,0,0.02));
+    --inner-shine: rgba(255,255,255,0.8);
+    
+    --selena-yellow: #ffd700; --selena-pink: #ff00a3; --selena-orange: #f0701f; 
+    --selena-cyan: #21c7fa; --selena-brown: #795548;
+}
+
+body[class*="theme-23"], body[class*="theme-27"], body[class*="theme-28"] {
+    --shadow-outer: 4px 4px 10px rgba(0, 0, 0, 0.6), -4px -4px 10px rgba(255, 255, 255, 0.05);
+    --shadow-inner: inset 3px 3px 8px rgba(0,0,0,0.6), inset -3px -3px 8px rgba(255,255,255,0.05);
+    --shadow-pop: 6px 6px 15px rgba(0,0,0,0.8), -6px -6px 15px rgba(255,255,255,0.05);
+    --shadow-btn: 4px 4px 10px rgba(0,0,0,0.6), -4px -4px 10px rgba(255,255,255,0.05);
+    --box-gradient: linear-gradient(145deg, rgba(255,255,255,0.05), rgba(0,0,0,0.4));
+    --inner-shine: rgba(255,255,255,0.05);
+}
+
+/* --------------------------------------------------------------------------
+   2. COLOR THEMES
+-------------------------------------------------------------------------- */
+body.theme-1 { --bg-main: #f8fafc; --bg-card: #e2e8f0; --accent: #3b82f6; --btn-bg: #e2e8f0; --time-color: #0f172a; }
+body.theme-2 { --bg-main: #f0fdf4; --bg-card: #d1fae5; --accent: #10b981; --btn-bg: #d1fae5; --time-color: #064e3b; }
+body.theme-3 { --bg-main: #fefce8; --bg-card: #fef08a; --accent: #eab308; --btn-bg: #fef08a; --time-color: #713f12; }
+body.theme-4 { --bg-main: #fdf2f8; --bg-card: #fbcfe8; --accent: #ec4899; --btn-bg: #fbcfe8; --time-color: #831843; }
+body.theme-5 { --bg-main: #faf5ff; --bg-card: #e9d5ff; --accent: #a855f7; --btn-bg: #e9d5ff; --time-color: #581c87; }
+body.theme-6 { --bg-main: #fff7ed; --bg-card: #fed7aa; --accent: #f97316; --btn-bg: #fed7aa; --time-color: #7c2d12; }
+body.theme-7 { --bg-main: #ecfeff; --bg-card: #bae6fd; --accent: #0ea5e9; --btn-bg: #bae6fd; --time-color: #0c4a6e; }
+body.theme-8 { --bg-main: #f1f5f9; --bg-card: #cbd5e1; --accent: #64748b; --btn-bg: #cbd5e1; --time-color: #0f172a; }
+body.theme-9 { --bg-main: #fdf4ff; --bg-card: #f3e8ff; --accent: #d946ef; --btn-bg: #f3e8ff; --time-color: #4a044e; }
+body.theme-10 { --bg-main: #f0fdfa; --bg-card: #99f6e4; --accent: #14b8a6; --btn-bg: #99f6e4; --time-color: #134e4a; }
+body.theme-11 { --bg-main: #fff1f2; --bg-card: #f5d0fe; --accent: #d946ef; --btn-bg: #f5d0fe; --time-color: #4a044e; }
+body.theme-12 { --bg-main: #eff6ff; --bg-card: #bfdbfe; --accent: #3b82f6; --btn-bg: #bfdbfe; --time-color: #1e3a8a; }
+body.theme-13 { --bg-main: #f5f5f4; --bg-card: #d6d3d1; --accent: #78716c; --btn-bg: #d6d3d1; --time-color: #1c1917; }
+body.theme-14 { --bg-main: #fef2f2; --bg-card: #fecdd3; --accent: #f43f5e; --btn-bg: #fecdd3; --time-color: #881337; }
+body.theme-15 { --bg-main: #fdffe6; --bg-card: #d9f99d; --accent: #84cc16; --btn-bg: #d9f99d; --time-color: #3f6212; }
+body.theme-16 { --bg-main: #fdf8f6; --bg-card: #ffe4e6; --accent: #f43f5e; --btn-bg: #ffe4e6; --time-color: #881337; }
+body.theme-17 { --bg-main: #f8fafc; --bg-card: #94a3b8; --accent: #334155; --btn-bg: #94a3b8; --time-color: #0f172a; }
+body.theme-18 { --bg-main: #ffffff; --bg-card: #f1f5f9; --accent: #0f172a; --btn-bg: #f1f5f9; --time-color: #000000; }
+body.theme-19 { --bg-main: #fffaeb; --bg-card: #fde68a; --accent: #fbbf24; --btn-bg: #fde68a; --time-color: #78350f; }
+body.theme-20 { --bg-main: #fdf5ff; --bg-card: #f5d0fe; --accent: #c026d3; --btn-bg: #f5d0fe; --time-color: #4a044e; }
+body.theme-21 { --bg-main: #fff0f7; --bg-card: #ffe0f0; --accent: var(--selena-pink); --text-main: #4a002f; --btn-bg: #ffe0f0; --time-color: var(--selena-pink); }
+body.theme-22 { --bg-main: #fffbe6; --bg-card: #fef08a; --accent: #d97706; --text-main: #422006; --btn-bg: #fef08a; --time-color: #78350f; }
+body.theme-23 { --bg-main: rgb(5, 5, 94); --bg-card: rgb(26, 26, 110); --accent: var(--selena-cyan); --text-main: #ffffff; --btn-bg: rgba(255,255,255,0.05); --border: rgba(255,255,255,0.2); --time-color: #ffffff; --log-bg: rgba(0,0,0,0.3); --custom-name-color:#ffffff;}
+body.theme-24 { --bg-main: #e8f5e9; --bg-card: #c8e6c9; --accent: #4caf50; --text-main: #1b5e20; --btn-bg: #c8e6c9; --time-color: #2e7d32; }
+body.theme-25 { --bg-main: #e0f2fe; --bg-card: #bae6fd; --accent: #0284c7; --text-main: #0c4a6e; --btn-bg: #bae6fd; --time-color: #0369a1; }
+body.theme-26 { --bg-main: #fef3c7; --bg-card: #fde68a; --accent: #ea580c; --text-main: #78350f; --btn-bg: #fde68a; --time-color: #9a3412; }
+body.theme-27 { --bg-main: #1e1b4b; --bg-card: #312e81; --accent: #f97316; --text-main: #ffffff; --btn-bg: #3730a3; --border: #4f46e5; --time-color: #fdba74; --log-bg: rgba(0,0,0,0.3); --custom-name-color:#ffffff;}
+body.theme-28 { --bg-main: #064e3b; --bg-card: #022c22; --accent: #ef4444; --text-main: #ffffff; --btn-bg: #065f46; --border: #059669; --time-color: #fca5a5; --log-bg: rgba(0,0,0,0.3); --custom-name-color:#ffffff;}
+body.theme-29 { --bg-main: #f0f9ff; --bg-card: #e0f2fe; --accent: #38bdf8; --text-main: #0f172a; --btn-bg: #e0f2fe; --time-color: #0284c7; }
+body.theme-30 { --bg-main: #fdf4ff; --bg-card: #fae8ff; --accent: #8b5cf6; --text-main: #4a044e; --btn-bg: #fae8ff; --time-color: #8b5cf6; }
+
+/* --------------------------------------------------------------------------
+   3. RESET & BASE (화면을 최대한 넓게 사용)
+-------------------------------------------------------------------------- */
+* { box-sizing: border-box; }
+input, textarea, select, div[contenteditable] { font-family: 'Pretendard', sans-serif; }
+
+html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
+body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color: var(--text-main); transition: background 0.4s, color 0.4s; }
+
+.main-wrapper { display: flex; flex-direction: column; height: 100%; position: relative;}
+.body-layout { display: flex; flex: 1; overflow: hidden; position: relative; min-height: 0; }
+
+.content-wrapper { 
+    flex: 1; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; 
+    -webkit-overflow-scrolling: touch; display: block; 
+    padding-bottom: 120px; /* 하단 탭 바가 내용을 가리지 않도록 여백 확보 */
+    width: 100%; 
+}
+
+/* --------------------------------------------------------------------------
+   4. HEADER & BOTTOM NAV (신규: 하단 고정 탭 바)
+-------------------------------------------------------------------------- */
+.global-header { 
+    display: flex; justify-content: center; align-items: center; 
+    position: relative; padding: 15px 30px; background: var(--bg-main); 
+    border-bottom: 2px solid var(--border); box-shadow: var(--shadow-outer); 
+    z-index: 100; flex-shrink: 0;
+}
+
+.header-center { display: flex; flex-direction: column; align-items: center; gap: 5px; text-align: center; }
+.academy-subtitle { font-size: 16px; font-weight: 700; color: var(--text-muted); letter-spacing: 2px; }
+.class-main-title { font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 38px; font-weight: 900; margin: 0; letter-spacing: 1px; background: linear-gradient(135deg, var(--text-main) 30%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 4px 8px rgba(0,0,0,0.06); }
+.date-display { font-size: 13px; font-weight: 600; color: var(--text-muted); font-family: 'Montserrat', 'Pretendard', sans-serif; background: var(--bg-card); padding: 4px 15px; border-radius: 20px; box-shadow: var(--shadow-inner); border: 1px solid var(--border); }
+
+.header-right { position: absolute; right: 30px; display: flex; align-items: center; }
+.st-logo-container { display: flex; align-items: center; gap: 10px; padding: 8px 15px; border-radius: 10px; background: var(--bg-card); box-shadow: var(--shadow-btn); border: 1px solid var(--border); border-left: 4px solid var(--accent); }
+.st-logo-img { height: 28px; width: auto; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1)); }
+.st-title { font-family: 'Montserrat', sans-serif; font-size: 18px; font-weight: 900; color: var(--text-main); line-height: 1; letter-spacing: -0.5px; }
+.st-version { background: var(--text-main); color: var(--bg-card); padding: 3px 6px; border-radius: 5px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; margin-left: 6px; letter-spacing: 0.5px;}
+
+/* 🌟 신규: 하단 고정 탭 바 (Bottom Navigation Bar) */
+.bottom-nav {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    background: var(--bg-main); background-image: var(--box-gradient);
+    border-top: 2px solid var(--border);
+    box-shadow: 0 -8px 25px rgba(0,0,0,0.08);
+    display: flex; justify-content: center; align-items: center; gap: 15px;
+    padding: 12px 20px; z-index: 999;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+}
+
+.bottom-nav-tab {
+    flex: 1; max-width: 250px; height: 60px;
+    display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 12px;
+    background: var(--bg-main); border: 2px solid transparent; border-radius: 16px;
+    box-shadow: var(--shadow-btn); cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    font-family: 'Montserrat', 'Pretendard', sans-serif; 
+}
+
+.bottom-nav-tab .nav-icon { font-size: 24px; line-height: 1; transition: 0.3s; }
+.bottom-nav-tab .nav-text { font-size: 16px; font-weight: 800; color: var(--text-muted); white-space: nowrap; transition: 0.3s; }
+
+/* 탭 활성화 상태 */
+.bottom-nav-tab.active { 
+    box-shadow: var(--shadow-inner); background: var(--bg-card); border-color: var(--accent); 
+}
+.bottom-nav-tab.active .nav-icon { transform: scale(1.1); }
+.bottom-nav-tab.active .nav-text { color: var(--accent); font-weight: 900; }
+.bottom-nav-tab:active { transform: scale(0.97); }
+
+/* --------------------------------------------------------------------------
+   5. UTILITIES, COMPONENTS & SMART ACCORDION
+-------------------------------------------------------------------------- */
+.view-section { display: none; padding: 25px 40px; animation: fadeIn 0.4s ease; max-width: 1700px; margin: 0 auto; width: 100%; }
+.view-section.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+.btn-3d { position: relative; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: var(--shadow-btn); border: 2px solid var(--border); font-family: 'Pretendard', sans-serif; background: var(--box-gradient); border-radius: 14px; color: var(--text-main); outline: none; }
+.btn-3d:active { box-shadow: var(--shadow-inner); transform: scale(0.97); }
+.btn-3d-sm { position: relative; transition: all 0.15s; box-shadow: var(--shadow-btn); border: 1px solid var(--border); border-radius: 10px; background: var(--box-gradient); color: var(--text-main); }
+.btn-3d-sm:active { box-shadow: var(--shadow-inner); transform: scale(0.96); }
+
+/* 🌟 SMART ACCORDION (유지) */
+.collapsible { cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; transition: opacity 0.3s, transform 0.2s; }
+.collapsible:active { transform: scale(0.99); }
+.toggle-icon { font-size: 14px; transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1); color: var(--text-muted); padding-left: 15px; }
+.collapsed-header .toggle-icon { transform: rotate(180deg); }
+
+.collapse-wrapper { display: grid; grid-template-rows: 1fr; transition: grid-template-rows 0.35s cubic-bezier(0.4, 0, 0.2, 1); margin-top: 10px; }
+.collapse-wrapper.collapsed-wrapper { grid-template-rows: 0fr; margin-top: 0; }
+.collapse-inner { overflow: hidden; padding: 5px; margin: -5px; }
+.collapse-inner.settings-inner { padding-top: 15px; }
+
+.count-badge { background: var(--btn-bg); color: var(--text-main); font-size: 13px; padding: 2px 10px; border-radius: 12px; font-weight: 900; border: 1px solid var(--border); box-shadow: var(--shadow-inner); }
+
+/* --------------------------------------------------------------------------
+   6. VIEW: ROSTER
+-------------------------------------------------------------------------- */
+.group-title { font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 18px; font-weight: 900; color: var(--text-main); margin: 25px 0 0 0; padding-bottom: 8px; border-bottom: 2px solid var(--border); }
+.group-title:first-child { margin-top: 0; }
+
+.student-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 15px; min-height: 120px; align-content: start; }
+
+.student-btn { 
+    height: 120px; font-weight: 900; cursor: grab; overflow: hidden; z-index: 1; 
+    display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
+    font-family: 'Pretendard', sans-serif; touch-action: none;
+    border: 3px solid var(--border); box-shadow: var(--shadow-pop); transition: transform 0.2s, box-shadow 0.2s; border-radius: 14px;
+}
+.student-btn::after { content: ''; position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px; border-radius: 10px; border: 1.5px solid var(--inner-shine); pointer-events: none; z-index: 3; }
+
+.student-btn .gauge-bg, .student-btn .name-text, .student-btn .level-tag, .student-btn .status-badge { pointer-events: none; }
+.gauge-bg { position: absolute; top: 0; left: 0; height: 100%; width: 0%; z-index: -1; transition: width 0.5s ease; border-radius: 10px 0 0 10px; }
+.name-text { position: relative; z-index: 2; color: var(--custom-name-color); text-shadow: var(--custom-name-shadow); letter-spacing: 1px; margin-top: 5px; margin-bottom: 20px; font-size: 34px; }
+
+.quick-controls { display: none; position: absolute; bottom: 8px; left: 0; width: 100%; justify-content: center; gap: 6px; z-index: 10; padding: 0 10px; }
+.student-btn.attended .quick-controls, .student-btn.playing .quick-controls, .student-btn.alarm-blink .quick-controls { display: flex; }
+.student-btn.finished .quick-controls { display: none; }
+
+.quick-btn { flex: 1; padding: 6px 0; border-radius: 8px; font-size: 13px; font-weight: 900; border: none; box-shadow: var(--shadow-btn); cursor: pointer; transition: 0.2s; color: white; font-family: 'Pretendard', sans-serif; }
+.quick-btn.q-start { background: linear-gradient(135deg, var(--brand-success), #059669); text-shadow: 0 1px 2px rgba(0,0,0,0.2); pointer-events: auto; }
+.quick-btn.q-finish { background: linear-gradient(135deg, var(--accent), #2563eb); text-shadow: 0 1px 2px rgba(0,0,0,0.2); pointer-events: auto; }
+.quick-btn:active { transform: scale(0.95); box-shadow: var(--shadow-inner); }
+.student-btn.playing .q-start, .student-btn.alarm-blink .q-start { opacity: 0.4; cursor: not-allowed; }
+
+.alarm-alert-text { display: none; position: relative; z-index: 2; font-size: 14px; font-weight: 900; color: #991b1b; letter-spacing: 1px; margin-bottom: 2px; animation: blinker 0.6s linear infinite; }
+@keyframes blinker { 50% { opacity: 0.4; } }
+
+.level-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-size: 11px; font-family: 'Montserrat', sans-serif; font-weight: 900; z-index: 4; letter-spacing: 1px; padding: 4px 12px; border-radius: 0 0 10px 10px; box-shadow: 0 3px 8px rgba(0,0,0,0.15); }
+
+.level-PRE { border-color: var(--selena-yellow); background: linear-gradient(135deg, rgba(255, 215, 0, 0.2) 0%, var(--bg-card) 100%); } .level-PRE .gauge-bg { background: rgba(255, 215, 0, 0.75); } .level-PRE .level-tag { background: var(--selena-yellow); color: #000; } 
+.level-BASIC { border-color: var(--selena-pink); background: linear-gradient(135deg, rgba(255, 0, 163, 0.15) 0%, var(--bg-card) 100%); } .level-BASIC .gauge-bg { background: rgba(255, 0, 163, 0.65); } .level-BASIC .level-tag { background: var(--selena-pink); color: #fff; }
+.level-INTER { border-color: var(--selena-orange); background: linear-gradient(135deg, rgba(240, 112, 31, 0.15) 0%, var(--bg-card) 100%); } .level-INTER .gauge-bg { background: rgba(240, 112, 31, 0.65); } .level-INTER .level-tag { background: var(--selena-orange); color: #fff; }
+.level-ADV { border-color: var(--selena-cyan); background: linear-gradient(135deg, rgba(33, 199, 250, 0.18) 0%, var(--bg-card) 100%); } .level-ADV .gauge-bg { background: rgba(33, 199, 250, 0.7); } .level-ADV .level-tag { background: var(--selena-cyan); color: #fff; }
+.level-PREP { border-color: var(--selena-brown); background: linear-gradient(135deg, rgba(121, 85, 72, 0.15) 0%, var(--bg-card) 100%); } .level-PREP .gauge-bg { background: rgba(121, 85, 72, 0.65); } .level-PREP .level-tag { background: var(--selena-brown); color: #fff; }
+
+.status-badge { position: absolute; top: 8px; right: 8px; font-size: 11px; font-weight: 900; padding: 4px 8px; border-radius: 8px; transition: 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 5; }
+.student-btn.attended .status-badge { background: var(--brand-success); color: white; border: 1px solid rgba(255,255,255,0.4); }
+.student-btn.playing .status-badge { background: var(--accent); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
+.student-btn.finished { opacity: 0.6; filter: grayscale(80%); box-shadow: var(--shadow-inner); background: var(--bg-main); border-color: transparent;}
+.student-btn.finished::after { display: none; }
+.student-btn.finished .status-badge { background: transparent; color: var(--text-muted); box-shadow: none; border: 1px solid var(--border); }
+.student-btn.drag-over { transform: scale(1.03); box-shadow: var(--shadow-pop) !important; border: 3px solid var(--accent); z-index: 10; } 
+
+/* --------------------------------------------------------------------------
+   7. VIEW: TIMER 
+-------------------------------------------------------------------------- */
+.timer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; margin-top: 10px;}
+.timer-box { background: var(--bg-main); background-image: var(--box-gradient); padding: 18px; border-radius: 20px; box-shadow: var(--shadow-pop); border: 2px solid var(--border); display: flex; flex-direction: column; align-items: center; position: relative; transition: all 0.2s; }
+.timer-box::after { content: ''; position: absolute; top: 3px; left: 3px; right: 3px; bottom: 3px; border-radius: 16px; border: 2px solid var(--inner-shine); pointer-events: none; z-index: 0; }
+.timer-box > * { z-index: 1; position: relative; } 
+.timer-box.drag-over { transform: scale(1.02) !important; box-shadow: var(--shadow-pop) !important; border: 3px solid var(--accent); }
+
+.desk-id { font-size: 18px; font-family: 'Montserrat', sans-serif; color: var(--text-muted); font-weight: 900; background: transparent; padding: 0; margin-bottom: 8px; letter-spacing: 1px; }
+.info-panel { width: 100%; border-radius: 16px; padding: 12px 0; text-align: center; margin-bottom: 15px; cursor: grab; transition: all 0.3s; border: 1px solid transparent; }
+
+.timer-bg-PRE { background: rgba(255, 215, 0, 0.15); box-shadow: var(--shadow-inner); border: 1px solid rgba(255, 215, 0, 0.3); }
+.timer-bg-BASIC { background: rgba(255, 0, 163, 0.1); box-shadow: var(--shadow-inner); border: 1px solid rgba(255, 0, 163, 0.3); }
+.timer-bg-INTER { background: rgba(240, 112, 31, 0.1); box-shadow: var(--shadow-inner); border: 1px solid rgba(240, 112, 31, 0.3); }
+.timer-bg-ADV { background: rgba(33, 199, 250, 0.15); box-shadow: var(--shadow-inner); border: 1px solid rgba(33, 199, 250, 0.3); }
+.timer-bg-PREP { background: rgba(121, 85, 72, 0.1); box-shadow: var(--shadow-inner); border: 1px solid rgba(121, 85, 72, 0.3); }
+
+.student-name-display { font-size: 32px; font-weight: 900; color: var(--custom-name-color); margin: 0 0 5px 0; text-shadow: var(--custom-name-shadow); letter-spacing: 1px; min-height: 40px;}
+.time-display { font-family: 'JetBrains Mono', monospace; font-size: 46px; color: var(--time-color); font-weight: 800; line-height: 1; letter-spacing: -1.5px; }
+
+.time-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; margin-bottom: 15px; }
+.time-btn { padding: 10px 0; font-size: 14px; font-weight: 800; font-family: 'JetBrains Mono', monospace; cursor: pointer; }
+.time-btn.minus { color: var(--text-muted); }
+.time-btn.clear { background: var(--bg-main); color: var(--brand-danger); font-family: 'Montserrat', sans-serif; grid-column: span 1; }
+
+.action-btn-row { display: flex; gap: 8px; width: 100%; margin-bottom: 8px; }
+.action-btn-row:last-child { margin-bottom: 0; }
+.action-btn { flex: 1; padding: 14px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 15px; letter-spacing: 0.5px; border: 2px solid var(--border); }
+
+.btn-start { background: linear-gradient(135deg, var(--brand-success), #059669); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.3), inset 2px 2px 4px rgba(255,255,255,0.3); border: none; font-size: 18px; padding: 16px; width: 100%; }
+.btn-finish { background: linear-gradient(135deg, var(--accent), #2563eb); color: white; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.3), inset 2px 2px 4px rgba(255,255,255,0.3); border: none; width: 100%; font-size: 17px; padding: 14px; }
+.btn-stop { background: var(--box-gradient); color: var(--text-muted); }
+.btn-cancel { background: var(--box-gradient); color: var(--brand-danger); }
+
+@keyframes modern-alarm-glow {
+    0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.2); border-color: var(--brand-danger); transform: scale(1); background-color: #fff1f2;}
+    50% { box-shadow: 0 0 25px rgba(239, 68, 68, 0.8), inset 0 0 15px rgba(239, 68, 68, 0.4); border-color: #fca5a5; transform: scale(1.03); background-color: #fee2e2;}
+    100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.2); border-color: var(--brand-danger); transform: scale(1); background-color: #fff1f2;}
+}
+
+.student-btn.alarm-blink { animation: modern-alarm-glow 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important; z-index: 20; background-image: none !important; border: 3px solid var(--brand-danger); }
+.student-btn.alarm-blink .gauge-bg, .student-btn.alarm-blink .level-tag, .student-btn.alarm-blink .status-badge { display: none !important; } 
+.student-btn.alarm-blink .name-text { color: var(--brand-danger) !important; text-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important; margin-top: -5px; margin-bottom: 20px; font-size: 32px; } 
+.student-btn.alarm-blink .alarm-alert-text { display: block; margin-top: -3px;} 
+
+.timer-box.done { animation: modern-alarm-glow 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important; background-image: none !important; border: 3px solid var(--brand-danger); }
+.timer-box.done .info-panel { background: transparent !important; box-shadow: none !important; border: none !important;}
+.timer-box.done .student-name-display { color: var(--brand-danger) !important; text-shadow: 0 2px 8px rgba(239, 68, 68, 0.3) !important; font-weight: 900;}
+.timer-box.done .time-display { color: var(--brand-danger) !important; font-weight: 900;}
+.timer-box.done .desk-id { color: #000000 !important; font-weight: 900;}
+.timer-box.done::after { display: none; }
+
+/* --------------------------------------------------------------------------
+   8. VIEW: LOG & SETTINGS 
+-------------------------------------------------------------------------- */
+.log-container { background: var(--bg-main); background-image: var(--box-gradient); border: 2px solid var(--border); border-radius: 20px; padding: 25px; box-shadow: var(--shadow-pop); margin-bottom: 20px; }
+.log-columns { display: flex; gap: 20px; height: calc(100vh - 350px); min-height: 300px; }
+.log-column-wrapper { flex: 1; display: flex; flex-direction: column; gap: 10px; height: 100%; min-height: 0; }
+.log-column-title { color: var(--text-main); font-weight: 900; font-size: 16px; text-align: center; padding: 12px; border-radius: 12px; font-family: 'Pretendard', sans-serif; flex-shrink: 0; }
+.log-column { flex: 1; overflow-y: auto; background: var(--bg-main); border-radius: 16px; padding: 18px; font-family: 'JetBrains Mono', monospace; font-size: 15px; font-weight: 700; color: var(--text-main); box-shadow: var(--shadow-inner); line-height: 1.5; border: 1px solid var(--border); }
+
+.settings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; align-items: stretch; }
+.settings-card { background: var(--bg-main); background-image: var(--box-gradient); border: 2px solid var(--border); border-radius: 20px; padding: 25px; box-shadow: var(--shadow-pop); display: flex; flex-direction: column; position: relative;}
+.settings-card::after { content: ''; position: absolute; top: 2px; left: 2px; right: 2px; bottom: 2px; border-radius: 16px; border: 1.5px solid var(--inner-shine); pointer-events: none; }
+.settings-card > * { position: relative; z-index: 1; }
+.settings-card.roster-card { grid-column: span 3; }
+.settings-card h3 { color: var(--text-main); margin-top: 0; font-size: 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; padding-bottom: 12px; margin-bottom: 0; display: flex; align-items: center; gap: 10px; border-bottom: 2px solid var(--border); }
+.settings-card h3 .icon-accent { color: var(--accent); }
+.settings-row { margin-bottom: 20px; }
+.settings-label { display: block; font-size: 14px; font-weight: 700; margin-bottom: 8px; color: var(--text-muted); }
+.settings-input { width: 100%; padding: 12px; border-radius: 12px; background: var(--bg-main); color: var(--text-main); border: 1px solid var(--border); box-shadow: var(--shadow-inner); font-weight: 700; font-size: 14px; outline: none; text-align: center;}
+.settings-input:focus { border-color: var(--accent); }
+select { cursor: pointer; text-align: left; }
+
+.roster-dashboard { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+.level-input-box { background: var(--bg-main); border-radius: 16px; padding: 15px; box-shadow: var(--shadow-btn); transition: all 0.3s; display: flex; flex-direction: column; gap: 10px; border: 1px solid var(--border);}
+.level-input-box:focus-within { transform: translateY(-3px); box-shadow: var(--shadow-pop); border-color: var(--accent); }
+.level-input-box .level-title { font-family: 'Montserrat', sans-serif; font-size: 17px; font-weight: 900; letter-spacing: 1px; text-align: center; }
+.editable-roster { background: transparent; border-radius: 10px; padding: 12px; font-size: 18px; font-weight: 800; color: var(--text-main); height: 120px; overflow-y: auto; outline: none; transition: 0.2s; font-family: 'Pretendard', sans-serif; word-break: keep-all; line-height: 1.6; box-shadow: var(--shadow-inner); border: 1px solid rgba(0,0,0,0.05); text-align: center; }
+.editable-roster div { text-align: center; width: 100%; }
+.editable-roster:empty:before { content: attr(data-placeholder); color: var(--text-muted); opacity: 0.6; font-weight: 600; font-size: 15px; display: block; text-align: center; }
+
+.admin-btn { padding: 16px; border-radius: 14px; color: var(--text-main); font-weight: 900; cursor: pointer; font-size: 15px; display:flex; align-items:center; justify-content:center; gap:8px; width: 100%; font-family: 'Montserrat', 'Pretendard', sans-serif; letter-spacing: 0.5px; }
+.admin-btn.primary { background: linear-gradient(135deg, var(--accent), #2563eb); color: #fff; border:none; box-shadow: 0 4px 8px rgba(59, 130, 246, 0.4), inset 2px 2px 4px rgba(255,255,255,0.4); }
+
+/* --------------------------------------------------------------------------
+   9. FOOTER
+-------------------------------------------------------------------------- */
+.global-footer { text-align: center; padding: 30px 15px 50px 15px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 13px; font-weight: 600; }
+.global-footer span { color: var(--accent); font-weight: 900; }
+</style>
+</head>
+<body>
+
+<div class="main-wrapper">
+    <header class="global-header" id="mainHeader">
+        <div class="header-center">
+            <div class="academy-subtitle" id="displayAcademyName">향촌삼성영어학원</div>
+            <h1 class="class-main-title" id="displayClassName">Maple Classroom</h1>
+            <div class="date-display" id="displayDate">2026. 00. 00 (일)</div>
+        </div>
+        
+        <div class="header-right">
+            <div class="st-logo-container">
+                <img src="st flow.png" alt="ShinTony Timer Logo" class="st-logo-img" onerror="this.style.display='none'">
+                <div style="display: flex; align-items: center;">
+                    <span class="st-title">ShinTony Timer</span>
+                    <span class="st-version">v5.7.0</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="body-layout">
+        <main class="content-wrapper">
+            
+            <section id="view-roster" class="view-section active">
+                
+                <h2 class="group-title collapsible" onclick="toggleSection(this)">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="icon-accent" data-i18n="grpWait">⏳ 배정 대기 (Waiting)</span>
+                        <span class="count-badge" id="count-unassigned">0</span>
+                    </div>
+                    <span class="toggle-icon">▲</span>
+                </h2>
+                <div class="collapse-wrapper">
+                    <div id="grid-unassigned" class="student-grid collapse-inner"></div>
+                </div>
+
+                <h2 class="group-title collapsible" onclick="toggleSection(this)">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="icon-accent" data-i18n="grpActive">▶️ 수업 중 (Active)</span>
+                        <span class="count-badge" id="count-active">0</span>
+                    </div>
+                    <span class="toggle-icon">▲</span>
+                </h2>
+                <div class="collapse-wrapper">
+                    <div id="grid-active" class="student-grid collapse-inner"></div>
+                </div>
+
+                <h2 class="group-title collapsible" onclick="toggleSection(this)">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span class="icon-accent" data-i18n="grpFinish">🏁 수업 완료 (Finished)</span>
+                        <span class="count-badge" id="count-finished">0</span>
+                    </div>
+                    <span class="toggle-icon">▲</span>
+                </h2>
+                <div class="collapse-wrapper">
+                    <div id="grid-finished" class="student-grid collapse-inner"></div>
+                </div>
+
+            </section>
+
+            <section id="view-timer" class="view-section">
+                <div id="grid" class="timer-grid"></div>
+            </section>
+
+            <section id="view-log" class="view-section">
+                <div class="log-container">
+                    <div class="log-columns">
+                        <div class="log-column-wrapper">
+                            <div class="log-column-title btn-3d" data-i18n="logStart">▶️ 시작 기록 (START)</div>
+                            <div id="log-left" class="log-column"></div>
+                        </div>
+                        <div class="log-column-wrapper">
+                            <div class="log-column-title btn-3d" data-i18n="logFinish">🏁 종료 및 완료 (FINISH)</div>
+                            <div id="log-right" class="log-column"></div>
+                        </div>
+                    </div>
+                </div>
+                <div style="display: flex; justify-content: flex-end; gap: 15px;">
+                    <button class="admin-btn btn-3d" style="background: linear-gradient(135deg, #f59e0b, #b45309); color:#fff; width: auto; padding: 14px 25px; font-size: 15px;" onclick="askSoftReset(); playUISound('click');" data-i18n="softReset">🔄 타이머 및 로그 초기화</button>
+                    <button class="admin-btn btn-3d primary" style="width: auto; padding: 14px 40px; font-size: 15px;" onclick="saveLogAction(); playUISound('click');" data-i18n="exportLog">💾 수업 로그 내보내기 (.txt)</button>
+                </div>
+            </section>
+
+            <section id="view-settings" class="view-section">
+                <div class="settings-grid">
+                    
+                    <div class="settings-card roster-card">
+                        <h3 class="collapsible" onclick="toggleSection(this)">
+                            <div style="display:flex; align-items:center; gap:10px;"><span class="icon-accent">🧑‍🎓</span> <span data-i18n="rosterMgt">학생 명단 관리</span></div>
+                            <span class="toggle-icon">▲</span>
+                        </h3>
+                        <div class="collapse-wrapper">
+                            <div class="collapse-inner settings-inner">
+                                <div class="roster-dashboard">
+                                    <div class="level-input-box box-PRE">
+                                        <span class="level-title" style="color:var(--selena-yellow); text-shadow: 0 1px 2px rgba(0,0,0,0.1);">PRE</span>
+                                        <div id="studentInput_PRE" class="editable-roster" contenteditable="true" data-placeholder="엔터로 이름 입력"></div>
+                                    </div>
+                                    <div class="level-input-box box-BASIC">
+                                        <span class="level-title" style="color:var(--selena-pink);">BASIC</span>
+                                        <div id="studentInput_BASIC" class="editable-roster" contenteditable="true" data-placeholder="엔터로 이름 입력"></div>
+                                    </div>
+                                    <div class="level-input-box box-INTER">
+                                        <span class="level-title" style="color:var(--selena-orange);">INTER</span>
+                                        <div id="studentInput_INTER" class="editable-roster" contenteditable="true" data-placeholder="엔터로 이름 입력"></div>
+                                    </div>
+                                    <div class="level-input-box box-ADV">
+                                        <span class="level-title" style="color:var(--selena-cyan);">ADVANCED</span>
+                                        <div id="studentInput_ADV" class="editable-roster" contenteditable="true" data-placeholder="엔터로 이름 입력"></div>
+                                    </div>
+                                    <div class="level-input-box box-PREP">
+                                        <span class="level-title" style="color:var(--selena-brown);">PREP31</span>
+                                        <div id="studentInput_PREP" class="editable-roster" contenteditable="true" data-placeholder="엔터로 이름 입력"></div>
+                                    </div>
+                                </div>
+                                <div style="text-align: center;">
+                                    <button class="admin-btn btn-3d primary" onclick="generateStudents(); playUISound('click');" style="margin: 30px auto 0 auto; width: fit-content; padding: 14px 50px;" data-i18n="saveRoster">💾 명단 저장하기</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3 class="collapsible" onclick="toggleSection(this)">
+                            <div style="display:flex; align-items:center; gap:10px;"><span class="icon-accent">🏫</span> <span data-i18n="acadInfo">학원 정보 및 디스플레이</span></div>
+                            <span class="toggle-icon">▲</span>
+                        </h3>
+                        <div class="collapse-wrapper">
+                            <div class="collapse-inner settings-inner">
+                                <div class="settings-row" style="background:var(--bg-main); padding:12px; border-radius:12px; border: 1px solid var(--border); margin-bottom: 20px;">
+                                    <span class="settings-label" data-i18n="langText">🌐 Language / 언어</span>
+                                    <select id="langSelect" class="settings-input" onchange="changeLanguage()">
+                                        <option value="ko">한국어 (Korean)</option>
+                                        <option value="en">English (영어)</option>
+                                    </select>
+                                </div>
+        
+                                <div class="settings-row">
+                                    <span class="settings-label" data-i18n="acadName">학원 이름</span>
+                                    <input type="text" id="inputAcademyName" class="settings-input" value="향촌삼성영어학원" oninput="updateCustomNames()">
+                                </div>
+                                <div class="settings-row">
+                                    <span class="settings-label" data-i18n="className">반 이름</span>
+                                    <input type="text" id="inputClassName" class="settings-input" value="Maple Classroom" oninput="updateCustomNames()">
+                                </div>
+                                
+                                <div class="settings-row" style="margin-top: 25px; background:var(--bg-main); padding:15px; border-radius:12px; box-shadow:var(--shadow-btn); border: 1px solid var(--border);">
+                                    <span class="settings-label" data-i18n="timerCount">⏱️ 타이머 개수 설정</span>
+                                    <select id="deskCountSelect" class="settings-input" onchange="changeDeskCount()">
+                                        <option value="10">10 (Default)</option>
+                                        <option value="11">11</option>
+                                        <option value="12">12</option>
+                                        <option value="13">13</option>
+                                        <option value="14">14</option>
+                                        <option value="15">15 (Max)</option>
+                                    </select>
+                                </div>
+        
+                                <div class="settings-row" style="margin-top: 20px;">
+                                    <span class="settings-label" data-i18n="colorTheme">색상 테마 (30종)</span>
+                                    <select id="themeSelect" class="settings-input" onchange="changeTheme()">
+                                        <optgroup label="Light Clean Themes">
+                                            <option value="1">1. Default White</option>
+                                            <option value="2">2. Mint White</option>
+                                            <option value="3">3. Yellow White</option>
+                                            <option value="4">4. Pink White</option>
+                                            <option value="5">5. Purple White</option>
+                                            <option value="6">6. Orange White</option>
+                                            <option value="7">7. Cyan White</option>
+                                            <option value="8">8. Gray White</option>
+                                            <option value="9">9. Fuchsia White</option>
+                                            <option value="10">10. Teal White</option>
+                                            <option value="11">11. Rose White</option>
+                                            <option value="12">12. Blue White</option>
+                                            <option value="13">13. Stone White</option>
+                                            <option value="14">14. Red White</option>
+                                            <option value="15">15. Lime White</option>
+                                            <option value="16">16. Warm Pink White</option>
+                                            <option value="17">17. Slate White</option>
+                                            <option value="18">18. Pure White</option>
+                                            <option value="19">19. Amber White</option>
+                                            <option value="20">20. Violet White</option>
+                                        </optgroup>
+                                        <optgroup label="Samsung English Seasonal & Brand">
+                                            <option value="21">21. Selena Brand Pink</option>
+                                            <option value="22">22. Selena Brand Yellow</option>
+                                            <option value="23">23. Selena Brand Deep Navy</option>
+                                            <option value="24">24. Spring Blossom (Spring)</option>
+                                            <option value="25">25. Summer Pool (Summer)</option>
+                                            <option value="26">26. Autumn Chuseok (Autumn)</option>
+                                            <option value="27">27. Halloween Night</option>
+                                            <option value="28">28. Merry Christmas</option>
+                                            <option value="29">29. Winter Snow (Winter)</option>
+                                            <option value="30">30. Selena Rainbow Mix</option>
+                                        </optgroup>
+                                    </select>
+                                </div>
+                                <div class="settings-row">
+                                    <span class="settings-label" data-i18n="nameColor">이름 색상 (10종)</span>
+                                    <select id="nameColorSelect" class="settings-input" onchange="changeNameColor()">
+                                        <option value="dark">1. Dark (Default)</option>
+                                        <option value="white">2. Pure White</option>
+                                        <option value="black">3. Black (White Outline)</option>
+                                        <option value="yellow">4. Neon Yellow</option>
+                                        <option value="pink">5. Pastel Pink</option>
+                                        <option value="cyan">6. Soft Cyan</option>
+                                        <option value="green">7. Mint Green</option>
+                                        <option value="orange">8. Coral Sunset</option>
+                                        <option value="purple">9. Lavender Purple</option>
+                                        <option value="gold">10. Royal Gold</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3 class="collapsible" onclick="toggleSection(this)">
+                            <div style="display:flex; align-items:center; gap:10px;"><span class="icon-accent">🎨</span> <span data-i18n="audioSetup">오디오 및 효과음 설정</span></div>
+                            <span class="toggle-icon">▲</span>
+                        </h3>
+                        <div class="collapse-wrapper">
+                            <div class="collapse-inner settings-inner">
+                                <div class="settings-row">
+                                    <span class="settings-label" data-i18n="alarmMelody">알람 멜로디</span>
+                                    <div style="display: flex; gap: 8px;">
+                                        <select id="melodyType" class="settings-input" style="flex: 1;" onchange="saveToStorage()">
+                                            <option value="0">1. Default (Bright Chime)</option>
+                                            <option value="1">2. Happy Arpeggio</option>
+                                            <option value="2">3. Digital Alert</option>
+                                            <option value="3">4. Soft Lullaby</option>
+                                            <option value="4">5. Success Ascend</option>
+                                            <option value="5">6. Urgent Beeps</option>
+                                            <option value="6">7. Magic Sparkle</option>
+                                            <option value="7">8. Deep Gong</option>
+                                            <option value="8">9. Gentle Xylophone</option>
+                                            <option value="9">10. Retro Arcade</option>
+                                            <option value="10">11. Warning Siren</option>
+                                            <option value="11">12. Scale Up</option>
+                                            <option value="12">13. Descending Triad</option>
+                                            <option value="13">14. Double Beep</option>
+                                            <option value="14">15. Major Down</option>
+                                            <option value="15">16. High-Low Alert</option>
+                                            <option value="16">17. Pentatonic Rise</option>
+                                            <option value="17">18. Minor Drop</option>
+                                            <option value="18">19. Rapid Fire</option>
+                                            <option value="19">20. Happy Trill</option>
+                                            <option value="20">21. Westminster Chimes</option>
+                                            <option value="21">22. Für Elise</option>
+                                            <option value="22">23. Announcement</option>
+                                            <option value="23">24. Cuckoo Clock</option>
+                                            <option value="24">25. Fast School Bell</option>
+                                        </select>
+                                        <button class="btn-3d" style="border-radius:12px; padding:0 15px; font-weight:900; cursor:pointer;" onclick="previewMelody();">🎵</button>
+                                    </div>
+                                </div>
+        
+                                <div class="settings-row">
+                                    <span class="settings-label" data-i18n="uiSound">UI 클릭음</span>
+                                    <select id="uiSoundType" class="settings-input" onchange="saveToStorage(); previewRealtime('ui');">
+                                        <option value="0">1. Standard Tick</option>
+                                        <option value="1">2. Soft Pop</option>
+                                        <option value="2">3. Crisp Snap</option>
+                                        <option value="3">4. Deep Thud</option>
+                                        <option value="4">5. Digital Blip</option>
+                                        <option value="5">6. Glass Tap</option>
+                                        <option value="6">7. Wooden Knock</option>
+                                        <option value="7">8. Sci-Fi Beep</option>
+                                        <option value="8">9. Hollow Drop</option>
+                                        <option value="9">10. Chime Tink</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="settings-row" style="background:var(--bg-main); padding:15px; border-radius:12px; box-shadow:var(--shadow-btn); border: 1px solid var(--border);">
+                                    <span class="settings-label" data-i18n="ttsVoice">🗣️ TTS 음성 안내</span>
+                                    <select id="ttsVoiceSelect" class="settings-input" onchange="saveToStorage(); previewRealtime('tts');">
+                                        <option value="1">1. 한국어 여성 (이름 두 번 호명)</option>
+                                        <option value="2">2. 한국어+영어 릴레이 (이름 한 번 + Let's go home!)</option>
+                                        <option value="0">3. Voice Disabled (음성 끄기)</option>
+                                    </select>
+                                </div>
+        
+                                <div class="settings-row">
+                                    <span class="settings-label" data-i18n="volAlarm">🔊 알람 볼륨</span>
+                                    <input type="range" id="volAlarm" min="0" max="100" value="50" style="width:100%; margin-bottom:12px;" oninput="updateVolumes(); previewRealtime('alarm');">
+                                    <span class="settings-label" data-i18n="volTTS">🗣️ 음성 볼륨</span>
+                                    <input type="range" id="volTTS" min="0" max="100" value="80" style="width:100%; margin-bottom:12px;" oninput="updateVolumes(); previewRealtime('tts');">
+                                    <span class="settings-label" data-i18n="volUI">🖱️ 클릭 볼륨</span>
+                                    <input type="range" id="volUI" min="0" max="100" value="50" style="width:100%;" oninput="updateVolumes(); previewRealtime('ui');">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-card">
+                        <h3 class="collapsible" onclick="toggleSection(this)">
+                            <div style="display:flex; align-items:center; gap:10px;"><span class="icon-accent">💾</span> <span data-i18n="sysCtrl">시스템 관리</span></div>
+                            <span class="toggle-icon">▲</span>
+                        </h3>
+                        <div class="collapse-wrapper">
+                            <div class="collapse-inner settings-inner">
+                                <div style="display: flex; flex-direction: column; gap: 15px;">
+                                    <button class="admin-btn btn-3d" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8); color:#fff; margin:0; justify-content: flex-start; padding-left: 20px; border:none;" onclick="exportData(); playUISound('click');" data-i18n="backupCreate">📦 백업 파일 저장 (.json)</button>
+                                    <button class="admin-btn btn-3d" style="background: linear-gradient(135deg, #10b981, #047857); color:#fff; margin:0; justify-content: flex-start; padding-left: 20px; border:none;" onclick="triggerImport(); playUISound('click');" data-i18n="backupRestore">📂 백업 파일 불러오기 (.json)</button>
+                                    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+                                    
+                                    <div style="height: 1px; background: var(--border); margin: 5px 0;"></div>
+                                    
+                                    <button class="admin-btn btn-3d" style="background: linear-gradient(135deg, #f59e0b, #b45309); color:#fff; margin-bottom:0; border:none;" onclick="askSoftReset()" data-i18n="softReset">🔄 타이머 및 로그 초기화</button>
+                                    <button class="admin-btn btn-3d" style="background: linear-gradient(135deg, #ef4444, #b91c1c); color:#fff; margin:0; border:none;" onclick="askFactoryReset()" data-i18n="hardReset">⚠️ 모든 설정 공장 초기화</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <footer class="global-footer">
+                Designed & Developed by <span>Tony (ShinJungHoon)</span>
+            </footer>
+        </main>
+    </div>
+    
+    <nav class="bottom-nav" id="bottomNav">
+        <div class="bottom-nav-tab active" onclick="switchView('roster')">
+            <span class="nav-icon">🧑‍🎓</span><span class="nav-text" data-i18n="nav1">학생 명단</span>
+        </div>
+        <div class="bottom-nav-tab" onclick="switchView('timer')">
+            <span class="nav-icon">⏱️</span><span class="nav-text" data-i18n="nav2">타이머</span>
+        </div>
+        <div class="bottom-nav-tab" onclick="switchView('log')">
+            <span class="nav-icon">📊</span><span class="nav-text" data-i18n="nav3">출결 기록</span>
+        </div>
+        <div class="bottom-nav-tab" onclick="switchView('settings')">
+            <span class="nav-icon">⚙️</span><span class="nav-text" data-i18n="nav4">설정</span>
+        </div>
+    </nav>
+</div>
+
+<script>
+// ==========================================
+// 1. APP STATE, I18N & VARIABLES
+// ==========================================
+const STORAGE_KEY = "samsung_timer_v36_ARCHITECTURE"; 
+let DESK_COUNT = 10; 
+let timers = [];
+let audioCtx = null; 
+
+let draggedName = null; 
+let draggedFromIndex = null; 
+let draggedNameForList = null; 
+
+let attendanceMap = new Map(); 
+let finishedSet = new Set(); 
+let assignOrderCounter = 0; 
+let studentLevels = {}; 
+
+let logLeftItems = []; 
+let logRightItems = []; 
+
+let academyName = "향촌삼성영어학원"; 
+let className = "Maple Classroom";
+
+let alarmVolume = 0.5; 
+let ttsVolume = 0.8; 
+let uiVolume = 0.5; 
+let currentTheme = "1";
+
+let currentLang = 'ko'; 
+
+// 언어 데이터 딕셔너리
+const i18n = {
+    en: {
+        nav1: "STUDENTS", nav2: "TIMER", nav3: "ATTEND LOG", nav4: "SETTING",
+        logStart: "▶️ START LOG", logFinish: "🏁 FINISH LOG", exportLog: "💾 EXPORT LESSON LOG (.txt)",
+        rosterMgt: "ROSTER MANAGEMENT", saveRoster: "💾 SAVE ROSTER DATA",
+        placeholder: "Press Enter to add", msgSaveRoster: "Student roster data saved perfectly.",
+        acadInfo: "ACADEMY INFO & DISPLAY", acadName: "Academy Name", className: "Class Name",
+        timerCount: "⏱️ Timer Dashboard Count", colorTheme: "Color Theme (30 Colors)", nameColor: "Name Color",
+        audioSetup: "AUDIO SETUP", alarmMelody: "Alarm Melody", uiSound: "UI Click Sound", ttsVoice: "🗣️ TTS Voice Assistant",
+        volAlarm: "🔊 Alarm Volume", volTTS: "🗣️ Voice Volume", volUI: "🖱️ Click Volume",
+        sysCtrl: "SYSTEM CONTROL", backupCreate: "📦 CREATE BACKUP (.json)", backupRestore: "📂 RESTORE BACKUP (.json)",
+        softReset: "🔄 Soft Reset (Timers & Logs)", hardReset: "⚠️ Hard Reset (Factory Reset)",
+        btnStart: "START", btnStop: "STOP", btnCancel: "CANCEL", btnFinish: "FINISH LESSON", btnClear: "CLR",
+        statusAssign: "✔ Assigned", statusPlaying: "▶️ Playing", statusTimeUp: "🔔 Time Up", statusFinish: "🏁 Finished",
+        logStartWord: "Started", logFinishWord: "Finished", logCancelWord: "Canceled",
+        quickStart: "▶️ START", quickFinish: "🏁 FINISH",
+        grpWait: "⏳ WAITING", grpActive: "▶️ ACTIVE", grpFinish: "🏁 FINISHED",
+        noRecords: "No Records", langText: "🌐 Language / 언어",
+        days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+        alertSoft: "This will reset timers and logs only.\n(Rosters and settings are kept safe.) Proceed?",
+        alertHard: "⚠️ WARNING ⚠️\nAll settings, rosters, and data will be permanently deleted.\nAre you sure you want to factory reset?",
+        alertResetDone: "Reset completed successfully.", alertFactoryDone: "Factory reset complete. System will reboot.",
+        alertBackupDone: "Backup restored! System will reboot.", alertBackupFail: "Invalid backup file."
+    },
+    ko: {
+        nav1: "학생 명단", nav2: "타이머", nav3: "출결 기록", nav4: "설정",
+        logStart: "▶️ 시작 기록 (START)", logFinish: "🏁 종료 및 완료 (FINISH)", exportLog: "💾 수업 로그 내보내기 (.txt)",
+        rosterMgt: "학생 명단 관리", saveRoster: "💾 명단 저장하기",
+        placeholder: "엔터로 이름 입력", msgSaveRoster: "학생 명단이 완벽하게 저장되었습니다.",
+        acadInfo: "학원 정보 및 디스플레이", acadName: "학원 이름", className: "반 이름",
+        timerCount: "⏱️ 타이머 개수 설정", colorTheme: "색상 테마 (30종)", nameColor: "이름 색상 (10종)",
+        audioSetup: "오디오 및 효과음 설정", alarmMelody: "알람 멜로디", uiSound: "UI 클릭음", ttsVoice: "🗣️ TTS 음성 안내",
+        volAlarm: "🔊 알람 볼륨", volTTS: "🗣️ 음성 볼륨", volUI: "🖱️ 클릭 볼륨",
+        sysCtrl: "시스템 관리", backupCreate: "📦 백업 파일 저장 (.json)", backupRestore: "📂 백업 파일 불러오기 (.json)",
+        softReset: "🔄 타이머 및 로그 초기화", hardReset: "⚠️ 모든 설정 공장 초기화",
+        btnStart: "시작", btnStop: "정지", btnCancel: "취소", btnFinish: "수업 완료", btnClear: "초기화",
+        statusAssign: "✔ 자리배정", statusPlaying: "▶️ 수업 중", statusTimeUp: "🔔 시간 종료", statusFinish: "🏁 완료",
+        logStartWord: "시작", logFinishWord: "완료", logCancelWord: "취소",
+        quickStart: "▶️ 시작", quickFinish: "🏁 종료",
+        grpWait: "⏳ 배정 대기 (Waiting)", grpActive: "▶️ 수업 중 (Active)", grpFinish: "🏁 수업 완료 (Finished)",
+        noRecords: "기록 없음", langText: "🌐 Language / 언어",
+        days: ['일', '월', '화', '수', '목', '금', '토'],
+        alertSoft: "타이머 기록과 출결 로그만 초기화합니다.\n(명단과 학원 설정은 안전하게 유지됩니다.) 진행하시겠습니까?",
+        alertHard: "⚠️ 경고 ⚠️\n학생 명단, 테마, 오디오 등 모든 설정이 완전히 삭제되고 처음 상태로 돌아갑니다.\n정말 공장 초기화하시겠습니까?",
+        alertResetDone: "오늘의 수업 기록이 깔끔하게 리셋되었습니다.", alertFactoryDone: "모든 데이터가 초기화되었습니다. 시스템을 다시 시작합니다.",
+        alertBackupDone: "데이터 복구 완료! 시스템을 재시작합니다.", alertBackupFail: "잘못된 백업 파일입니다."
+    }
+};
+
+// ==========================================
+// 2. INITIALIZATION & LIFECYCLE
+// ==========================================
+window.onload = () => { loadData(); updateDateUI(); }; 
+setInterval(updateDateUI, 60000); 
+
+function updateDateUI() {
+    const now = new Date(); const t = i18n[currentLang];
+    const str = `${now.getFullYear()}. ${String(now.getMonth()+1).padStart(2,'0')}. ${String(now.getDate()).padStart(2,'0')} (${t.days[now.getDay()]})`;
+    const el = document.getElementById('displayDate'); if(el) el.innerText = str;
+}
+
+function changeLanguage() { currentLang = document.getElementById("langSelect").value; saveToStorage(); applyLanguage(); }
+
+function applyLanguage() {
+    const t = i18n[currentLang];
+    document.querySelectorAll("[data-i18n]").forEach(el => { el.innerText = t[el.getAttribute("data-i18n")]; });
+    document.querySelectorAll(".editable-roster").forEach(el => { el.setAttribute("data-placeholder", t.placeholder); });
+    updateDateUI(); generateStudents(); 
+    for (let i = 0; i < DESK_COUNT; i++) updateBoxUI(i);
+    renderLogs(); 
+}
+
+// 🌟 수동 아코디언 토글 기능
+function toggleSection(el) {
+    playUISound('tab');
+    el.classList.toggle('collapsed-header');
+    const wrapper = el.nextElementSibling;
+    if(wrapper && wrapper.classList.contains('collapse-wrapper')) {
+        wrapper.classList.toggle('collapsed-wrapper');
+    }
+}
+
+// 🌟 빈 그룹 자동 숨김 (Smart Auto-Collapse)
+let countUpdateTimeout = null;
+function triggerCountUpdate() { clearTimeout(countUpdateTimeout); countUpdateTimeout = setTimeout(updateGroupCounts, 50); }
+
+function updateGroupCounts() {
+    ['unassigned', 'active', 'finished'].forEach(type => {
+        const grid = document.getElementById('grid-' + type);
+        if(!grid) return;
+        
+        const count = grid.children.length;
+        const badge = document.getElementById('count-' + type);
+        if(badge) badge.innerText = count;
+        
+        const wrapper = grid.closest('.collapse-wrapper');
+        const header = wrapper.previousElementSibling;
+        const prevCount = parseInt(grid.dataset.prevCount || '-1');
+        
+        if (count === 0) {
+            wrapper.classList.add('collapsed-wrapper');
+            header.classList.add('collapsed-header');
+            header.style.opacity = '0.5';
+        } else {
+            header.style.opacity = '1';
+            if (prevCount === 0 && count > 0) {
+                wrapper.classList.remove('collapsed-wrapper');
+                header.classList.remove('collapsed-header');
+            }
+        }
+        grid.dataset.prevCount = count; 
+    });
+}
+
+// ==========================================
+// 3. UI & VIEW MANAGEMENT
+// ==========================================
+function switchView(view) {
+    playUISound('tab');
+    document.querySelectorAll('.view-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.bottom-nav-tab').forEach(t => t.classList.remove('active'));
+    document.getElementById(`view-${view}`).classList.add('active');
+    document.querySelector(`.bottom-nav-tab[onclick*='${view}']`).classList.add('active');
+}
+
+function updateCustomNames() {
+    academyName = document.getElementById('inputAcademyName').value || "향촌삼성영어학원";
+    className = document.getElementById('inputClassName').value || "Maple Classroom";
+    document.getElementById('displayAcademyName').innerText = academyName;
+    document.getElementById('displayClassName').innerText = className;
+    saveToStorage();
+}
+
+function changeNameColor() {
+    const val = document.getElementById("nameColorSelect").value; const root = document.documentElement;
+    const shadowDark = '0 2px 4px rgba(0,0,0,0.8)'; const shadowLight = '-1px -1px 0 #fff, 1px -1px 0 #fff, -1px 1px 0 #fff, 1px 1px 0 #fff, 0 2px 5px rgba(255,255,255,0.8)';
+    if (val === 'black') { root.style.setProperty('--custom-name-color', '#000000'); root.style.setProperty('--custom-name-shadow', shadowLight); } 
+    else if (val === 'white') { root.style.setProperty('--custom-name-color', '#ffffff'); root.style.setProperty('--custom-name-shadow', shadowDark); } 
+    else if (val === 'yellow') { root.style.setProperty('--custom-name-color', '#fde047'); root.style.setProperty('--custom-name-shadow', shadowDark); } 
+    else if (val === 'pink') { root.style.setProperty('--custom-name-color', '#fbcfe8'); root.style.setProperty('--custom-name-shadow', shadowDark); }
+    else if (val === 'cyan') { root.style.setProperty('--custom-name-color', '#67e8f9'); root.style.setProperty('--custom-name-shadow', shadowDark); }
+    else if (val === 'green') { root.style.setProperty('--custom-name-color', '#6ee7b7'); root.style.setProperty('--custom-name-shadow', shadowDark); }
+    else if (val === 'orange') { root.style.setProperty('--custom-name-color', '#fb923c'); root.style.setProperty('--custom-name-shadow', shadowDark); }
+    else if (val === 'purple') { root.style.setProperty('--custom-name-color', '#d8b4fe'); root.style.setProperty('--custom-name-shadow', shadowDark); }
+    else if (val === 'gold') { root.style.setProperty('--custom-name-color', '#fbbf24'); root.style.setProperty('--custom-name-shadow', shadowDark); }
+    else { root.style.setProperty('--custom-name-color', '#0f172a'); root.style.setProperty('--custom-name-shadow', 'none'); }
+    saveToStorage();
+}
+
+function changeTheme() { currentTheme = document.getElementById("themeSelect").value; document.body.className = "theme-" + currentTheme; saveToStorage(); }
+function updateVolumes() { alarmVolume = document.getElementById('volAlarm').value / 100; ttsVolume = document.getElementById('volTTS').value / 100; uiVolume = document.getElementById('volUI').value / 100; saveToStorage(); }
+
+function changeDeskCount() {
+    const newCount = parseInt(document.getElementById("deskCountSelect").value);
+    if(newCount < timers.length) {
+        for(let i=newCount; i<timers.length; i++) {
+            if(timers[i].student !== "(empty)") {
+                if(!confirm(`타이머 ${newCount+1}번 이상에 배치된 학생이 있습니다. 그래도 타이머를 줄이시겠습니까? (해당 학생은 자동으로 자리 취소됩니다.)`)) {
+                    document.getElementById("deskCountSelect").value = DESK_COUNT; return;
+                }
+                break;
+            }
+        }
+        for(let i=newCount; i<timers.length; i++) {
+            stopTimer(i);
+            if(timers[i].student !== "(empty)") { attendanceMap.delete(timers[i].student); updateStudentStatus(timers[i].student); }
+        }
+        timers.length = newCount;
+    } else if(newCount > timers.length) {
+        for(let i=timers.length; i<newCount; i++) { timers.push({ student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }); }
+    }
+    DESK_COUNT = newCount; createInitialGrid(); saveToStorage();
+}
+
+// ==========================================
+// 4. DATA PERSISTENCE
+// ==========================================
+function saveToStorage() {
+    try {
+        const studentsObj = { 
+            PRE: getNamesFromContentEditable("studentInput_PRE").join("\n"), BASIC: getNamesFromContentEditable("studentInput_BASIC").join("\n"), 
+            INTER: getNamesFromContentEditable("studentInput_INTER").join("\n"), ADV: getNamesFromContentEditable("studentInput_ADV").join("\n"), 
+            PREP: getNamesFromContentEditable("studentInput_PREP").join("\n") 
+        };
+        const data = { 
+            deskCount: DESK_COUNT, academyName: academyName, className: className, students: studentsObj, logLeftItems: logLeftItems, logRightItems: logRightItems, 
+            attendance: Array.from(attendanceMap.entries()), finishedSet: Array.from(finishedSet), assignOrderCounter: assignOrderCounter, 
+            timerStates: timers.map(t => ({ student: t.student, remainingTime: t.remainingTime, totalTime: t.totalTime, overTime: t.overTime, isOver: t.isOver })), 
+            vols: { a: alarmVolume, t: ttsVolume, u: uiVolume, ttsVoice: document.getElementById("ttsVoiceSelect").value, melody: document.getElementById("melodyType").value, uiType: document.getElementById("uiSoundType").value }, 
+            theme: currentTheme, nameColor: document.getElementById("nameColorSelect").value, language: currentLang
+        };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    } catch(e) { console.error(e); }
+}
+
+function loadData() {
+    try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) {
+            const data = JSON.parse(saved); 
+            if(data.language) { currentLang = data.language; document.getElementById("langSelect").value = currentLang; }
+            if(data.deskCount) { DESK_COUNT = data.deskCount; document.getElementById("deskCountSelect").value = DESK_COUNT; }
+
+            academyName = data.academyName || "향촌삼성영어학원"; className = data.className || "Maple Classroom";
+            document.getElementById('inputAcademyName').value = academyName; document.getElementById('inputClassName').value = className;
+            document.getElementById('displayAcademyName').innerText = academyName; document.getElementById('displayClassName').innerText = className; 
+            
+            if (data.students) { 
+                if (typeof data.students === 'string') { updateContentEditable("studentInput_PRE", [data.students]); } 
+                else { 
+                    updateContentEditable("studentInput_PRE", (data.students.PRE || "").split('\n').filter(s=>s.trim()));
+                    updateContentEditable("studentInput_BASIC", (data.students.BASIC || "").split('\n').filter(s=>s.trim()));
+                    updateContentEditable("studentInput_INTER", (data.students.INTER || "").split('\n').filter(s=>s.trim()));
+                    updateContentEditable("studentInput_ADV", (data.students.ADV || "").split('\n').filter(s=>s.trim()));
+                    updateContentEditable("studentInput_PREP", (data.students.PREP || "").split('\n').filter(s=>s.trim()));
+                } 
+            }
+            
+            logLeftItems = data.logLeftItems || []; logRightItems = data.logRightItems || []; 
+            attendanceMap = new Map(data.attendance || []); finishedSet = new Set(data.finishedSet || []); assignOrderCounter = data.assignOrderCounter || 0; 
+            
+            timers = data.timerStates ? data.timerStates.map(ts => ({ ...ts, interval: null, lastTick: 0 })) : Array.from({length: DESK_COUNT}, () => ({ student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }));
+            while (timers.length < DESK_COUNT) { timers.push({ student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }); }
+            if (timers.length > DESK_COUNT) { timers.length = DESK_COUNT; }
+
+            if(data.vols) { 
+                alarmVolume = data.vols.a; ttsVolume = data.vols.t; uiVolume = data.vols.u !== undefined ? data.vols.u : 0.5; 
+                document.getElementById("volAlarm").value = data.vols.a * 100; document.getElementById("volTTS").value = data.vols.t * 100; document.getElementById("volUI").value = uiVolume * 100; 
+                if(data.vols.ttsVoice !== undefined) document.getElementById("ttsVoiceSelect").value = data.vols.ttsVoice; else document.getElementById("ttsVoiceSelect").value = "1"; 
+                if(data.vols.melody) document.getElementById("melodyType").value = data.vols.melody; 
+                if(data.vols.uiType) document.getElementById("uiSoundType").value = data.vols.uiType; 
+            }
+            if(data.theme) { currentTheme = data.theme; document.getElementById("themeSelect").value = currentTheme; document.body.className = "theme-" + currentTheme; }
+            if(data.nameColor) { document.getElementById("nameColorSelect").value = data.nameColor; changeNameColor(); }
+            
+            applyLanguage(); createInitialGrid(); generateStudents(); renderLogs();
+        } else {
+            updateContentEditable("studentInput_PRE", []); updateContentEditable("studentInput_BASIC", []); updateContentEditable("studentInput_INTER", []); updateContentEditable("studentInput_ADV", []); updateContentEditable("studentInput_PREP", []);
+            timers = Array.from({length: DESK_COUNT}, () => ({ student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }));
+            applyLanguage(); createInitialGrid(); generateStudents();
+        }
+    } catch(e) { applyLanguage(); createInitialGrid(); }
+}
+
+function exportData() { 
+    saveToStorage(); const data = localStorage.getItem(STORAGE_KEY); 
+    const blob = new Blob([data], {type: "application/json"}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); 
+    a.download = `Timer_Backup_PC_${new Date().toISOString().slice(0,10)}.json`; a.click(); 
+}
+
+function triggerImport() { document.getElementById("importFile").click(); }
+function importData(e) { 
+    const t = i18n[currentLang]; const file = e.target.files[0]; if (!file) return; 
+    const reader = new FileReader(); 
+    reader.onload = function(evt) { 
+        try { const json = JSON.parse(evt.target.result); localStorage.setItem(STORAGE_KEY, JSON.stringify(json)); alert(t.alertBackupDone); location.reload(); } 
+        catch(err) { alert(t.alertBackupFail); } 
+    }; 
+    reader.readAsText(file); 
+}
+
+// ==========================================
+// 5. ROSTER, 3-GROUP LAYOUT & QUICK CONTROLS
+// ==========================================
+function getNamesFromContentEditable(id) {
+    const el = document.getElementById(id); if(!el) return [];
+    let html = el.innerHTML;
+    html = html.replace(/<div[^>]*>/gi, '\n').replace(/<\/div>/gi, '\n').replace(/<p[^>]*>/gi, '\n').replace(/<\/p>/gi, '\n').replace(/<br\s*[\/]?>/gi, '\n');
+    let text = html.replace(/<[^>]+>/g, ''); return text.split(/\n/).map(s => s.trim()).filter(s => s !== "");
+}
+function updateContentEditable(id, arr) { const el = document.getElementById(id); if(el) el.innerHTML = arr.map(name => `<div>${name}</div>`).join(''); }
+
+window.quickStart = function(name) { let tIdx = timers.findIndex(t => t.student === name); if (tIdx !== -1) startTimer(tIdx); };
+window.quickFinish = function(name) { let tIdx = timers.findIndex(t => t.student === name); if (tIdx !== -1) finishSession(tIdx); };
+
+function generateStudents() {
+    document.getElementById("grid-unassigned").innerHTML = "";
+    document.getElementById("grid-active").innerHTML = "";
+    document.getElementById("grid-finished").innerHTML = "";
+
+    studentLevels = {}; const levels = ['PRE', 'BASIC', 'INTER', 'ADV', 'PREP'];
+    const tLang = i18n[currentLang]; let allNames = [];
+
+    levels.forEach(lvl => { const names = getNamesFromContentEditable("studentInput_" + lvl); names.forEach(n => { studentLevels[n] = lvl; allNames.push(n); }); });
+    
+    allNames.forEach((n, index) => {
+        const lvl = studentLevels[n];
+        const btn = document.createElement("button"); btn.id = "btn-" + n; 
+        let levelLabel = (lvl === 'PREP') ? 'PREP31' : (lvl === 'ADV' ? 'ADV' : lvl); 
+
+        btn.innerHTML = `
+            <div class="level-tag">${levelLabel}</div>
+            <div class="gauge-bg"></div>
+            <div class="alarm-alert-text"></div>
+            <span class="name-text">${n}</span>
+            <div class="quick-controls">
+                <button class="quick-btn q-start" onclick="event.stopPropagation(); quickStart('${n}')">${tLang.quickStart}</button>
+                <button class="quick-btn q-finish" onclick="event.stopPropagation(); quickFinish('${n}')">${tLang.quickFinish}</button>
+            </div>
+        `;
+        btn.draggable = true; btn.style.order = index;
+
+        btn.ondragstart = (e) => { draggedName = n; draggedNameForList = n; draggedFromIndex = null; e.dataTransfer.effectAllowed = 'move'; playUISound('click'); };
+        btn.ondragenter = (e) => { e.preventDefault(); btn.classList.add("drag-over"); };
+        btn.ondragover = (e) => { e.preventDefault(); btn.classList.add("drag-over"); };
+        btn.ondragleave = (e) => { btn.classList.remove("drag-over"); };
+        
+        btn.ondrop = (e) => {
+            e.preventDefault(); btn.classList.remove("drag-over");
+            if (draggedFromIndex !== null) return; 
+            if (draggedNameForList && draggedNameForList !== n) {
+                let fromLvl = null, toLvl = null, fromIdx = -1, toIdx = -1;
+                levels.forEach(l => {
+                    let arr = getNamesFromContentEditable("studentInput_" + l);
+                    let i1 = arr.indexOf(draggedNameForList); if (i1 > -1) { fromLvl = l; fromIdx = i1; }
+                    let i2 = arr.indexOf(n); if (i2 > -1) { toLvl = l; toIdx = i2; }
+                });
+                
+                if (fromLvl && toLvl) {
+                    let arrFrom = getNamesFromContentEditable("studentInput_" + fromLvl);
+                    let arrTo = getNamesFromContentEditable("studentInput_" + toLvl);
+                    if (fromLvl === toLvl) { let temp = arrFrom[fromIdx]; arrFrom[fromIdx] = arrFrom[toIdx]; arrFrom[toIdx] = temp; updateContentEditable("studentInput_" + fromLvl, arrFrom); } 
+                    else { let tempFrom = arrFrom[fromIdx]; let tempTo = arrTo[toIdx]; arrFrom[fromIdx] = tempTo; arrTo[toIdx] = tempFrom; updateContentEditable("studentInput_" + fromLvl, arrFrom); updateContentEditable("studentInput_" + toLvl, arrTo); }
+                    playUISound('click'); generateStudents(); 
+                }
+            }
+        };
+
+        btn.onclick = () => { 
+            btn.classList.add("clicked"); setTimeout(() => btn.classList.remove("clicked"), 150);
+            if (attendanceMap.has(n)) { let tIdx = timers.findIndex(t => t.student === n); if (tIdx !== -1) cancelSession(tIdx); } 
+            else { if (finishedSet.has(n)) finishedSet.delete(n); const emptyIdx = timers.findIndex(t => t.student === "(empty)"); if (emptyIdx !== -1) handleDropOnTimer(n, emptyIdx, null); }
+        };
+        
+        document.getElementById("grid-unassigned").appendChild(btn); 
+        updateStudentStatus(n);
+    });
+    
+    timers.forEach((t, idx) => { if(t.student !== "(empty)") { updateGauge(t.student, t.remainingTime, t.totalTime); updateBoxUI(idx); } }); 
+    saveToStorage();
+    triggerCountUpdate(); 
+}
+
+function updateStudentStatus(name) {
+    const tLang = i18n[currentLang];
+    const btn = document.getElementById("btn-" + name); if (!btn) return;
+    const lvl = studentLevels[name] || '';
+    
+    btn.className = `student-btn btn-3d level-${lvl}`; 
+    
+    let badge = btn.querySelector(".status-badge");
+    if (!badge) { badge = document.createElement("div"); badge.className = "status-badge"; btn.appendChild(badge); }
+    badge.style.background = ""; badge.style.color = "";
+    
+    let alertText = btn.querySelector(".alarm-alert-text");
+    if (alertText) alertText.innerText = tLang.statusTimeUp;
+
+    const gridUnassigned = document.getElementById("grid-unassigned");
+    const gridActive = document.getElementById("grid-active");
+    const gridFinished = document.getElementById("grid-finished");
+
+    if (finishedSet.has(name)) { 
+        btn.classList.add("finished"); badge.innerHTML = tLang.statusFinish; gridFinished.appendChild(btn);
+    } else {
+        let t = timers.find(x => x.student === name);
+        if (t) {
+            if (t.isOver) { 
+                btn.classList.add("alarm-blink", "attended"); badge.innerHTML = tLang.statusTimeUp; badge.style.background = "var(--brand-danger)"; badge.style.color = "white"; 
+            } else if (t.interval) { 
+                btn.classList.add("playing", "attended"); badge.innerHTML = tLang.statusPlaying; badge.style.background = "var(--accent)"; badge.style.color = "#fff"; 
+            } else { 
+                btn.classList.add("attended"); badge.innerHTML = tLang.statusAssign; badge.style.background = "var(--brand-success)"; badge.style.color = "white"; 
+            }
+            gridActive.appendChild(btn);
+        } else { 
+            badge.remove(); gridUnassigned.appendChild(btn);
+        }
+    }
+    triggerCountUpdate(); 
+}
+
+// ==========================================
+// 6. TIMER LOGIC
+// ==========================================
+function createInitialGrid() {
+    const grid = document.getElementById("grid"); grid.innerHTML = "";
+    for (let i = 0; i < DESK_COUNT; i++) {
+        const box = document.createElement("div"); box.id = `box-${i}`; box.className = "timer-box";
+        box.ondragenter = (e) => { e.preventDefault(); box.classList.add("drag-over"); };
+        box.ondragover = (e) => { e.preventDefault(); box.classList.add("drag-over"); };
+        box.ondragleave = (e) => { box.classList.remove("drag-over"); };
+        box.ondrop = (e) => { e.preventDefault(); box.classList.remove("drag-over"); handleDropOnTimer(draggedName, i, draggedFromIndex); };
+        grid.appendChild(box); updateBoxUI(i);
+    }
+}
+
+function updateBoxUI(id) {
+    const tLang = i18n[currentLang];
+    const t = timers[id]; const box = document.getElementById(`box-${id}`); if (!box) return;
+    const isAssigned = t.student !== "(empty)";
+    box.className = `timer-box ${t.isOver ? 'done' : ''}`;
+    const lvl = studentLevels[t.student] || '';
+    const panelClass = isAssigned && lvl ? `info-panel timer-bg-${lvl}` : 'info-panel';
+
+    const panelStyle = isAssigned ? "" : "background: transparent; border: 2px dashed var(--border); box-shadow: none;";
+    const nameDisplay = isAssigned ? t.student : '&nbsp;';
+    const numDisplay = String(id+1).padStart(2, '0');
+
+    box.innerHTML = `
+        <div class="desk-id" style="opacity: ${isAssigned ? '1' : '0.4'}">${numDisplay}</div>
+        <div class="${panelClass}" draggable="${isAssigned}" style="${panelStyle}">
+            <div class="student-name-display">${nameDisplay}</div>
+            <div class="time-display" id="display-${id}" style="visibility: ${isAssigned ? 'visible' : 'hidden'}">${t.isOver ? '+'+formatTime(t.overTime) : formatTime(t.remainingTime)}</div>
+        </div>
+        
+        <div class="time-controls">
+            <button class="time-btn btn-3d-sm" onclick="adjustTime(${id}, 3000)">+50</button>
+            <button class="time-btn btn-3d-sm" onclick="adjustTime(${id}, 600)">+10</button>
+            <button class="time-btn btn-3d-sm" onclick="adjustTime(${id}, 300)">+05</button>
+            <button class="time-btn btn-3d-sm" onclick="adjustTime(${id}, 60)">+01</button>
+            <button class="time-btn btn-3d-sm minus" onclick="adjustTime(${id}, -600)">-10</button>
+            <button class="time-btn btn-3d-sm minus" onclick="adjustTime(${id}, -300)">-05</button>
+            <button class="time-btn btn-3d-sm minus" onclick="adjustTime(${id}, -60)">-01</button>
+            <button class="time-btn btn-3d-sm clear" onclick="clearTime(${id})">${tLang.btnClear}</button>
+        </div>
+        
+        <div class="action-btn-row">
+            <button class="action-btn btn-3d btn-start" onclick="startTimer(${id})">${tLang.btnStart}</button>
+        </div>
+        
+        <div class="action-btn-row">
+            <button class="action-btn btn-3d-sm btn-stop" onclick="stopTimer(${id})">${tLang.btnStop}</button>
+            <button class="action-btn btn-3d-sm btn-cancel" onclick="cancelSession(${id})">${tLang.btnCancel}</button>
+        </div>
+        
+        <div class="action-btn-row">
+            <button class="action-btn btn-3d btn-finish" onclick="finishSession(${id})">${tLang.btnFinish}</button>
+        </div>
+    `;
+    const infoPanel = box.querySelector('.info-panel');
+    infoPanel.ondragstart = (e) => { if(isAssigned) { draggedName = t.student; draggedFromIndex = id; draggedNameForList = null; e.dataTransfer.effectAllowed = 'move'; } else { e.preventDefault(); } };
+}
+
+function handleDropOnTimer(name, targetIdx, fromIdx) {
+    if (fromIdx === targetIdx) return;
+    if (fromIdx !== null) {
+        stopTimer(fromIdx); stopTimer(targetIdx);
+        const fData = { ...timers[fromIdx] }; const tData = { ...timers[targetIdx] };
+        timers[targetIdx] = { ...fData, interval: null }; timers[fromIdx] = { ...tData, interval: null };
+        updateBoxUI(fromIdx); updateBoxUI(targetIdx); updateStudentStatus(timers[fromIdx].student); updateStudentStatus(timers[targetIdx].student); playUISound('assign');
+    } else {
+        let alreadyIdx = timers.findIndex(t => t.student === name); if(alreadyIdx !== -1) resetTimerData(alreadyIdx, false);
+        timers[targetIdx].student = name; timers[targetIdx].remainingTime = 3000; timers[targetIdx].totalTime = 3000;
+        if (!attendanceMap.has(name)) { assignOrderCounter++; attendanceMap.set(name, assignOrderCounter); if(finishedSet.has(name)) finishedSet.delete(name); }
+        playUISound('assign'); updateBoxUI(targetIdx); updateStudentStatus(name); updateGauge(name, 3000, 3000);
+    }
+    saveToStorage();
+}
+
+function startTimer(id) {
+    const target = timers[id]; if (target.interval || target.student === "(empty)") return;
+    initAudio(); playUISound('start'); logEvent(target.student, 'start', 'left'); target.lastTick = Date.now();
+    
+    target.interval = setInterval(() => {
+        const now = Date.now(); const delta = Math.floor((now - target.lastTick) / 1000);
+        if (delta >= 1) {
+            target.lastTick = now - ((now - target.lastTick) % 1000);
+            if (target.remainingTime > 0) {
+                target.remainingTime = Math.max(0, target.remainingTime - delta); 
+                updateGauge(target.student, target.remainingTime, target.totalTime); 
+                document.getElementById(`display-${id}`).innerText = formatTime(target.remainingTime);
+                if (target.remainingTime === 0 && !target.isOver) triggerAlarm(id);
+            } else {
+                if (!target.isOver) triggerAlarm(id); 
+                target.overTime += delta; document.getElementById(`display-${id}`).innerText = "+" + formatTime(target.overTime);
+                if (target.overTime >= 300) { finishSession(id); }
+            }
+        }
+    }, 250);
+    updateStudentStatus(target.student); 
+}
+
+function stopTimer(id) { if (timers[id].interval) { clearInterval(timers[id].interval); timers[id].interval = null; playUISound('stop'); updateStudentStatus(timers[id].student); } }
+function clearTime(id) { timers[id].remainingTime = 0; timers[id].totalTime = 0; timers[id].overTime = 0; timers[id].isOver = false; stopTimer(id); updateBoxUI(id); updateGauge(timers[id].student, 0, 1); saveToStorage(); }
+function cancelSession(id) { if(timers[id].student === "(empty)") return; playUISound('cancel'); const sn = timers[id].student; attendanceMap.delete(sn); resetTimerData(id, true); }
+function finishSession(id) { if(timers[id].student === "(empty)") return; playUISound('finish'); const sn = timers[id].student; finishedSet.add(sn); attendanceMap.delete(sn); logEvent(sn, 'finish', 'right', timers[id].overTime); resetTimerData(id, true); }
+function resetTimerData(id, resetUI) { stopTimer(id); const sn = timers[id].student; timers[id] = { student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }; updateBoxUI(id); if (resetUI) updateStudentStatus(sn); saveToStorage(); }
+function adjustTime(id, sec) { timers[id].remainingTime = Math.max(0, timers[id].remainingTime + sec); if(timers[id].remainingTime > timers[id].totalTime || timers[id].totalTime === 0) { timers[id].totalTime = timers[id].remainingTime; } if(timers[id].remainingTime > 0) { timers[id].isOver = false; timers[id].overTime = 0; updateStudentStatus(timers[id].student); } updateBoxUI(id); updateGauge(timers[id].student, timers[id].remainingTime, timers[id].totalTime); }
+function updateGauge(studentName, remaining, total) { const btn = document.getElementById("btn-" + studentName); if (!btn) return; const gauge = btn.querySelector(".gauge-bg"); if (!gauge || total <= 0) return; gauge.style.width = (((total - remaining) / total) * 100) + "%"; }
+function formatTime(t) { return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; }
+
+// ==========================================
+// 7. AUDIO & TTS
+// ==========================================
+function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
+function triggerAlarm(id) { timers[id].isOver = true; updateStudentStatus(timers[id].student); updateBoxUI(id); let melodyType = parseInt(document.getElementById("melodyType").value); playMelody(melodyType); playAlarmTTS(timers[id].student); }
+window.__tts_queue = []; 
+if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged = function() { window.speechSynthesis.getVoices(); }; window.speechSynthesis.getVoices(); }
+
+function playAlarmTTS(studentName) {
+    return new Promise(resolve => {
+        const voiceType = document.getElementById("ttsVoiceSelect").value;
+        if (voiceType === "0" || !window.speechSynthesis) return resolve();
+        let voices = window.speechSynthesis.getVoices(); 
+        if (voices.length === 0) { setTimeout(() => playAlarmTTS(studentName).then(resolve), 100); return; }
+
+        let u = new SpeechSynthesisUtterance(); u.volume = ttsVolume; u.rate = 1.05; u.pitch = 1.1; 
+        
+        if (voiceType === "1") { 
+            u.text = `${studentName}! ${studentName}!`; u.lang = 'ko-KR'; 
+            let koVoice = voices.find(v => v.name.includes('Natural') && v.lang.includes('ko') && !v.name.includes('InJoon') && !v.name.includes('Guy') && !v.name.includes('Male')) || voices.find(v => v.lang.includes('ko-KR') && (v.name.includes('Female') || v.name.includes('여성'))) || voices.find(v => v.lang.includes('ko') && !v.name.includes('Male') && !v.name.includes('남성')); 
+            if (koVoice) u.voice = koVoice; 
+        } 
+        else if (voiceType === "2" || voiceType === "3") { 
+            u.text = voiceType === "2" ? `${studentName}! Let's go home!` : `${studentName}! Time's up! It's time to go home!`; u.lang = 'en-US'; 
+            let enVoice = voices.find(v => v.name.includes('Multilingual') && v.name.includes('Natural') && !v.name.includes('Guy') && !v.name.includes('Christopher') && !v.name.includes('Male')) || voices.find(v => v.name.includes('Natural') && v.lang.includes('en') && !v.name.includes('Guy') && !v.name.includes('Christopher') && !v.name.includes('Male')) || voices.find(v => v.lang.includes('en-US') && (v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Female'))) || voices.find(v => v.lang.includes('en') && !v.name.includes('Guy') && !v.name.includes('Christopher') && !v.name.includes('Male')); 
+            if (enVoice) u.voice = enVoice; 
+        }
+        
+        u.onend = resolve; u.onerror = resolve; window.__tts_queue.push(u); window.speechSynthesis.speak(u);
+    });
+}
+function playMelody(type) {
+    return new Promise(resolve => {
+        initAudio();
+        const melodies = [ 
+            [523.25, 659.25, 783.99, 1046.50], [440, 554.37, 659.25, 880], [880, 880, 880, 880], [392, 329.63, 261.63], [261.63, 392, 523.25, 783.99], 
+            [1046.5, 0, 1046.5, 0, 1046.5], [1046.5, 1174.66, 1318.51, 1567.98], [130.81, 196.00], [587.33, 739.99, 880], [440, 349.23, 523.25, 493.88], 
+            [659.25, 523.25, 659.25, 523.25], [392, 440, 493.88, 523.25, 587.33], [1046.5, 783.99, 523.25], [440, 440, 0, 440, 440], [523.25, 392, 329.63, 261.63], 
+            [880, 659.25, 880, 659.25], [261.63, 329.63, 392, 523.25, 659.25], [783.99, 587.33, 440, 349.23], [1046.5, 1046.5, 1046.5, 1046.5, 1046.5], [523.25, 659.25, 587.33, 698.46, 659.25, 783.99],
+            [330, 261, 293, 196, 0, 196, 293, 330, 261], [659, 622, 659, 622, 659, 494, 587, 523, 440], [523, 659, 784, 1046], [392, 330, 0, 392, 330], [1046, 0, 1046, 0, 1046, 0, 1046, 0, 1046] 
+        ];
+        let notes = melodies[type] || melodies[0]; let now = audioCtx.currentTime; let noteLength = 0.25; 
+        if(type === 2 || type === 5 || type === 13 || type === 18 || type === 24) noteLength = 0.15;
+        if(type === 20 || type === 21 || type === 22) noteLength = 0.35;
+
+        notes.forEach((freq, i) => {
+            if (freq === 0) return;
+            let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain();
+            osc.type = (type === 2 || type === 9 || type === 18 || type === 24) ? 'square' : 'sine'; osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0, now + i*noteLength); gain.gain.linearRampToValueAtTime(alarmVolume, now + i*noteLength + 0.02); gain.gain.exponentialRampToValueAtTime(0.01, now + i*noteLength + noteLength);
+            osc.connect(gain); gain.connect(audioCtx.destination); osc.start(now + i*noteLength); osc.stop(now + i*noteLength + noteLength);
+        });
+        setTimeout(resolve, notes.length * noteLength * 1000 + 200);
+    });
+}
+
+function playUISound(type) {
+    if (!audioCtx) initAudio();
+    const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+    osc.connect(gain); gain.connect(audioCtx.destination); const now = audioCtx.currentTime; let v = uiVolume; if (v === 0) return;
+    if (type === 'tab' || type === 'click') {
+        let st = parseInt(document.getElementById('uiSoundType').value) || 0;
+        if(st === 0) { osc.type = 'sine'; osc.frequency.setValueAtTime(600, now); osc.frequency.exponentialRampToValueAtTime(800, now + 0.1); gain.gain.setValueAtTime(v * 0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); }
+        else if(st === 1) { osc.type = 'sine'; osc.frequency.setValueAtTime(400, now); osc.frequency.exponentialRampToValueAtTime(450, now + 0.05); gain.gain.setValueAtTime(v * 0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.05); osc.start(now); osc.stop(now + 0.05); }
+        else if(st === 2) { osc.type = 'triangle'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(1000, now + 0.03); gain.gain.setValueAtTime(v * 0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.03); osc.start(now); osc.stop(now + 0.03); }
+        else if(st === 3) { osc.type = 'sine'; osc.frequency.setValueAtTime(200, now); osc.frequency.exponentialRampToValueAtTime(150, now + 0.1); gain.gain.setValueAtTime(v * 0.3, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); }
+        else if(st === 4) { osc.type = 'square'; osc.frequency.setValueAtTime(1200, now); osc.frequency.exponentialRampToValueAtTime(1000, now + 0.08); gain.gain.setValueAtTime(v * 0.05, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.08); osc.start(now); osc.stop(now + 0.08); }
+        else if(st === 5) { osc.type = 'sine'; osc.frequency.setValueAtTime(2000, now); osc.frequency.exponentialRampToValueAtTime(2500, now + 0.02); gain.gain.setValueAtTime(v * 0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.02); osc.start(now); osc.stop(now + 0.02); }
+        else if(st === 6) { osc.type = 'triangle'; osc.frequency.setValueAtTime(300, now); osc.frequency.exponentialRampToValueAtTime(200, now + 0.06); gain.gain.setValueAtTime(v * 0.25, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.06); osc.start(now); osc.stop(now + 0.06); }
+        else if(st === 7) { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(800, now); osc.frequency.exponentialRampToValueAtTime(850, now + 0.1); gain.gain.setValueAtTime(v * 0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); }
+        else if(st === 8) { osc.type = 'sine'; osc.frequency.setValueAtTime(500, now); osc.frequency.exponentialRampToValueAtTime(300, now + 0.15); gain.gain.setValueAtTime(v * 0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(now); osc.stop(now + 0.15); }
+        else if(st === 9) { osc.type = 'sine'; osc.frequency.setValueAtTime(1500, now); osc.frequency.exponentialRampToValueAtTime(1800, now + 0.2); gain.gain.setValueAtTime(v * 0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.2); osc.start(now); osc.stop(now + 0.2); }
+    } else if (type === 'assign') { osc.type = 'triangle'; osc.frequency.setValueAtTime(880, now); gain.gain.setValueAtTime(v * 0.15, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(now); osc.stop(now + 0.15); } 
+    else if (type === 'start') { osc.type = 'square'; osc.frequency.setValueAtTime(440, now); osc.frequency.linearRampToValueAtTime(880, now + 0.1); gain.gain.setValueAtTime(v * 0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); } 
+    else if (type === 'stop') { osc.type = 'square'; osc.frequency.setValueAtTime(880, now); osc.frequency.linearRampToValueAtTime(440, now + 0.1); gain.gain.setValueAtTime(v * 0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); } 
+    else if (type === 'finish') { osc.type = 'sine'; osc.frequency.setValueAtTime(1046.5, now); gain.gain.setValueAtTime(v * 0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3); } 
+    else if (type === 'cancel') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, now); osc.frequency.linearRampToValueAtTime(150, now + 0.15); gain.gain.setValueAtTime(v * 0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(now); osc.stop(now + 0.15); }
+}
+
+let lastTestTime = 0; let ttsTimeout = null;
+function previewMelody() { playUISound('click'); let melodyType = parseInt(document.getElementById("melodyType").value); playMelody(melodyType); }
+function previewRealtime(type) {
+    const now = Date.now();
+    if (type === 'alarm') { if (now - lastTestTime > 150) { lastTestTime = now; initAudio(); let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.value = 880; gain.gain.value = alarmVolume; osc.connect(gain); gain.connect(audioCtx.destination); osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + 0.1); } } 
+    else if (type === 'ui') { if (now - lastTestTime > 150) { lastTestTime = now; playUISound('click'); } } 
+    else if (type === 'tts') { clearTimeout(ttsTimeout); ttsTimeout = setTimeout(() => { playAlarmTTS("Test"); }, 300); }
+}
+
+// ==========================================
+// 8. LOGGING & UTILITIES
+// ==========================================
+function logEvent(student, type, side, overTime = 0) {
+    const now = new Date(); const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    const obj = { time: timeStr, student: student, type: type, overTime: overTime };
+    if (side === 'left') logLeftItems.unshift(obj); else logRightItems.unshift(obj);
+    renderLogs(); saveToStorage();
+}
+
+function renderLogs() { 
+    const t = i18n[currentLang];
+    const renderItem = (item) => {
+        if (typeof item === 'string') return `<div style="margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:5px;">${item}</div>`;
+        let actionText = "";
+        if (item.type === 'start') actionText = `▶️ ${item.student} ${t.logStartWord}`;
+        else if (item.type === 'finish') { const extraStr = item.overTime > 0 ? ` (+${formatTime(item.overTime)})` : ""; actionText = `🏁 ${item.student} ${t.logFinishWord}${extraStr}`; }
+        return `<div style="margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:5px;">[${item.time}] ${actionText}</div>`;
+    };
+    document.getElementById("log-left").innerHTML = logLeftItems.map(renderItem).join(''); 
+    document.getElementById("log-right").innerHTML = logRightItems.map(renderItem).join(''); 
+}
+
+function saveLogAction() { 
+    const t = i18n[currentLang]; const now = new Date(); const dateString = `${now.getFullYear()}. ${now.getMonth()+1}. ${now.getDate()} (${t.days[now.getDay()]})`;
+    const formatLogTxt = (item) => {
+        if(typeof item === 'string') return item;
+        let actionText = "";
+        if (item.type === 'start') actionText = `▶️ ${item.student} ${t.logStartWord}`;
+        else if (item.type === 'finish') actionText = `🏁 ${item.student} ${t.logFinishWord}${item.overTime > 0 ? ' (+'+formatTime(item.overTime)+')' : ''}`;
+        return `[${item.time}] ${actionText}`;
+    };
+    const leftTxt = logLeftItems.length > 0 ? logLeftItems.map(formatLogTxt).join('\n') : t.noRecords;
+    const rightTxt = logRightItems.length > 0 ? logRightItems.map(formatLogTxt).join('\n') : t.noRecords;
+    const logText = `=========================================\n🏫 Academy : ${academyName}\n📚 Class : ${className}\n📅 Date : ${dateString}\n=========================================\n\n--- ▶️ START ---\n${leftTxt}\n\n--- 🏁 FINISH ---\n${rightTxt}\n`;
+    const blob = new Blob([logText], {type:'text/plain'}); const a = document.createElement("a"); a.href = URL.createObjectURL(blob); const fileNameDate = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`; a.download = `${academyName}_${className}_LOG_${fileNameDate}.txt`; a.click(); 
+}
+
+function askSoftReset() { 
+    const t = i18n[currentLang]; playUISound('cancel'); 
+    if(confirm(t.alertSoft)) { 
+        timers.forEach((t, i) => stopTimer(i)); 
+        timers = Array.from({length: DESK_COUNT}, () => ({ student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 })); 
+        logLeftItems = []; logRightItems = []; attendanceMap.clear(); finishedSet.clear(); assignOrderCounter = 0; 
+        renderLogs(); for(let i=0; i<DESK_COUNT; i++) updateBoxUI(i); generateStudents(); saveToStorage(); alert(t.alertResetDone); 
+    } 
+}
+
+function askFactoryReset() { 
+    const t = i18n[currentLang]; playUISound('cancel'); 
+    if(confirm(t.alertHard)) { localStorage.removeItem(STORAGE_KEY); alert(t.alertFactoryDone); location.reload(); } 
+}
+</script>
+</body>
+</html>
