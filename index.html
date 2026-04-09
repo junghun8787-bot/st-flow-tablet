@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ST Flow v5.6.3 (Tablet Pro Layout)</title>
+<title>ST Flow v5.6.4 (Tablet Pro Layout)</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.css">
 <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
@@ -124,9 +124,8 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .body-layout { display: flex; flex: 1; overflow: hidden; position: relative; min-height: 0; }
 
 /* --------------------------------------------------------------------------
-   🌟 4. HEADER & LEFT NAV (미니멀 사이즈 및 아이콘 모드 최적화)
+   4. HEADER & LEFT NAV (미니멀 사이즈 및 아이콘 모드 최적화)
 -------------------------------------------------------------------------- */
-/* 헤더를 얇고 깔끔하게 축소 */
 .global-header { 
     position: fixed; top: 0; left: 75px; width: calc(100% - 75px);
     display: flex; justify-content: space-between; align-items: center; 
@@ -146,7 +145,7 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .st-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 900; color: var(--text-main); line-height: 1; letter-spacing: -0.5px; }
 .st-version { background: var(--text-main); color: var(--bg-card); padding: 2px 5px; border-radius: 5px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; margin-left: 6px; letter-spacing: 0.5px;}
 
-/* 🌟 좌측 슬림 내비게이션 바 (아이콘 모드 고정) */
+/* 좌측 슬림 내비게이션 바 */
 .sidebar {
     position: fixed; top: 0; left: 0; bottom: 0; height: 100vh; width: 75px;
     background: var(--bg-main); border-right: 2px solid var(--border); border-top: none;
@@ -155,7 +154,7 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 }
 .sidebar-tabs { display: flex; flex-direction: column; gap: 25px; width: 100%; align-items: center; }
 
-/* 탭 버튼 (손가락 터치하기 좋은 크기) */
+/* 탭 버튼 */
 .nav-tab { 
     cursor: pointer; border-radius: 50%; width: 50px; height: 50px; flex-shrink: 0;
     background: var(--bg-main); border: 2px solid transparent; box-shadow: var(--shadow-btn); 
@@ -163,16 +162,15 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .nav-tab .nav-icon { font-size: 24px; line-height: 1; margin: 0; display: block; }
-.nav-tab .nav-text { display: none; } /* 텍스트 완전 숨김 */
+.nav-tab .nav-text { display: none; } 
 
 .nav-tab.active { 
-    transform: translateX(6px) scale(1.1); /* 활성화 시 오른쪽으로 살짝 튀어나옴 */
+    transform: translateX(6px) scale(1.1); 
     box-shadow: 0 10px 20px rgba(59,130,246,0.25); 
     background: var(--bg-card); 
     border: 3px solid var(--accent); 
 }
 
-/* 본문 영역 마진 및 패딩 설정 */
 .content-wrapper { 
     flex: 1; margin-left: 75px; padding-top: 80px; padding-bottom: 30px; 
     overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; display: block; 
@@ -196,35 +194,21 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .btn-3d-sm:active { box-shadow: var(--shadow-inner); transform: scale(0.96) translateY(2px); border-color: transparent; }
 
 /* --------------------------------------------------------------------------
-   🌟 6. VIEW: ROSTER (좌측: 반학생들 / 우측: 수업중 & 완료 2단 분할 레이아웃)
+   6. VIEW: ROSTER (좌측 명단 / 우측 상하 분할)
 -------------------------------------------------------------------------- */
-.roster-columns-wrapper { 
-    display: grid; 
-    grid-template-columns: 1.1fr 1.9fr; /* 좌측과 우측의 비율 1.1 : 1.9 설정 */
-    gap: 20px; align-items: stretch; width: 100%; 
-}
+.roster-columns-wrapper { display: grid; grid-template-columns: 1.1fr 1.9fr; gap: 20px; align-items: stretch; width: 100%; }
 
-.roster-right-panel { 
-    display: flex; flex-direction: column; gap: 20px; 
-}
+.roster-right-panel { display: flex; flex-direction: column; gap: 20px; }
 
-.roster-column { 
-    background: var(--bg-main); background-image: var(--box-gradient); 
-    border: 2px solid rgba(255,255,255,0.5); border-radius: 20px; 
-    padding: 15px; box-shadow: var(--shadow-pop); height: 100%; min-height: 200px;
-}
+.roster-column { background: var(--bg-main); background-image: var(--box-gradient); border: 2px solid rgba(255,255,255,0.5); border-radius: 20px; padding: 15px; box-shadow: var(--shadow-pop); height: 100%; min-height: 200px; }
 .roster-column.active-col { border: 3px solid var(--accent); box-shadow: var(--shadow-pop), 0 0 25px rgba(59, 130, 246, 0.15); background-image: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(59, 130, 246, 0.05)); }
 
 .group-title { font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 12px 0; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
 
-/* 🌟 반 학생들: 항상 3줄씩 맞춰서 정렬 */
 #grid-unassigned { display: grid; gap: 10px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(3, 1fr); }
-
-/* 수업 중 / 수업 완료 레이아웃 */
 #grid-active { display: grid; gap: 15px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
 #grid-finished { display: grid; gap: 10px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
 
-/* 버튼 디자인 및 크기 */
 .student-btn { font-weight: 900; cursor: grab; overflow: hidden; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; font-family: 'Pretendard', sans-serif; touch-action: none; background: var(--btn-gradient); border: none; box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; transform: translateZ(0); }
 .student-btn:active { transform: scale(0.96) translateY(2px); box-shadow: var(--shadow-inner); }
 
@@ -369,9 +353,9 @@ select { cursor: pointer; text-align: left; }
 .admin-btn.primary { background: linear-gradient(135deg, var(--accent), #2563eb); color: #fff; border:none; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4), inset 2px 2px 5px rgba(255,255,255,0.4); }
 
 /* --------------------------------------------------------------------------
-   9. FOOTER
+   🌟 9. FOOTER (복구됨!)
 -------------------------------------------------------------------------- */
-.global-footer { text-align: center; padding: 40px 20px 0 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 15px; font-weight: 600; letter-spacing: 1px; }
+.global-footer { text-align: center; padding: 40px 20px 30px 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 15px; font-weight: 600; letter-spacing: 1px; }
 .global-footer span { color: var(--accent); font-weight: 900; }
 </style>
 </head>
@@ -391,7 +375,7 @@ select { cursor: pointer; text-align: left; }
                 <img src="st flow.png" alt="ST Flow Logo" class="st-logo-img" onerror="this.style.display='none'">
                 <div style="display: flex; align-items: center;">
                     <span class="st-title">ST Flow</span>
-                    <span class="st-version">v5.6.3</span>
+                    <span class="st-version">v5.6.4</span>
                 </div>
             </div>
         </div>
@@ -673,8 +657,11 @@ select { cursor: pointer; text-align: left; }
                 </div>
             </section>
             
+            <footer class="global-footer">
+                Designed & Developed by <span>Tony (ShinJungHoon)</span>
+            </footer>
+            
         </main>
-        
     </div>
 </div>
 
@@ -1246,15 +1233,6 @@ function playUISound(type) {
     else if (type === 'stop') { osc.type = 'square'; osc.frequency.setValueAtTime(880, now); osc.frequency.linearRampToValueAtTime(440, now + 0.1); gain.gain.setValueAtTime(v * 0.08, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.1); osc.start(now); osc.stop(now + 0.1); } 
     else if (type === 'finish') { osc.type = 'sine'; osc.frequency.setValueAtTime(1046.5, now); gain.gain.setValueAtTime(v * 0.2, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.3); osc.start(now); osc.stop(now + 0.3); } 
     else if (type === 'cancel') { osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, now); osc.frequency.linearRampToValueAtTime(150, now + 0.15); gain.gain.setValueAtTime(v * 0.1, now); gain.gain.exponentialRampToValueAtTime(0.01, now + 0.15); osc.start(now); osc.stop(now + 0.15); }
-}
-
-let lastTestTime = 0; let ttsTimeout = null;
-function previewMelody() { playUISound('click'); let melodyType = parseInt(document.getElementById("melodyType").value); playMelody(melodyType); }
-function previewRealtime(type) {
-    const now = Date.now();
-    if (type === 'alarm') { if (now - lastTestTime > 150) { lastTestTime = now; initAudio(); let osc = audioCtx.createOscillator(); let gain = audioCtx.createGain(); osc.type = 'sine'; osc.frequency.value = 880; gain.gain.value = alarmVolume; osc.connect(gain); gain.connect(audioCtx.destination); osc.start(audioCtx.currentTime); osc.stop(audioCtx.currentTime + 0.1); } } 
-    else if (type === 'ui') { if (now - lastTestTime > 150) { lastTestTime = now; playUISound('click'); } } 
-    else if (type === 'tts') { clearTimeout(ttsTimeout); ttsTimeout = setTimeout(() => { playAlarmTTS("Test"); }, 300); }
 }
 
 function logEvent(student, type, side, overTime = 0) {
