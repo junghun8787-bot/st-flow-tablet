@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ST Flow v5.5.0 (Tablet & Touch Edition)</title>
+<title>ST Flow v5.6.0 (Tablet Full-Screen Edition)</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.css">
 <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
@@ -13,7 +13,6 @@
     MobileDragDrop.polyfill({
         dragImageTranslateOverride: MobileDragDrop.scrollBehaviourDragImageTranslateOverride
     });
-    // iOS/Android 스크롤 충돌 방지
     window.addEventListener('touchmove', function() {}, {passive: false});
 </script>
 
@@ -23,9 +22,9 @@
    1. FONTS & VARIABLES
    2. COLOR THEMES (30종)
    3. RESET & BASE
-   4. HEADER & BOTTOM NAV (태블릿 최적화)
+   4. HEADER & BOTTOM NAV (풀스크린 자동 숨김)
    5. UTILITIES & COMPONENTS
-   6. VIEW: ROSTER (명단창)
+   6. VIEW: ROSTER (명단창 컴팩트 사이즈)
    7. VIEW: TIMER (타이머창) 
    8. VIEW: LOG & SETTINGS
    9. FOOTER
@@ -121,65 +120,70 @@ input, textarea, select, div[contenteditable] { font-family: 'Pretendard', sans-
 html, body { height: 100%; margin: 0; padding: 0; overflow: hidden; }
 body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color: var(--text-main); transition: background 0.4s, color 0.4s; }
 
-.main-wrapper { display: flex; flex-direction: column; height: 100%; }
+.main-wrapper { display: flex; flex-direction: column; height: 100%; position: relative;}
 .body-layout { display: flex; flex: 1; overflow: hidden; position: relative; min-height: 0; }
 
 /* --------------------------------------------------------------------------
-   🌟 4. HEADER & BOTTOM NAV (태블릿 하단 메뉴로 완전 개편)
+   🌟 4. HEADER & BOTTOM NAV (풀스크린 자동 숨김 적용)
 -------------------------------------------------------------------------- */
 .global-header { 
+    position: fixed; top: 0; left: 0; width: 100%;
     display: flex; justify-content: center; align-items: center; 
-    position: relative; padding: 20px 40px; background: var(--bg-main); 
-    border-bottom: 2px solid var(--border); box-shadow: var(--shadow-outer); z-index: 100;
-    flex-shrink: 0;
+    padding: 20px 40px; background: var(--bg-main); 
+    border-bottom: 2px solid var(--border); box-shadow: var(--shadow-outer); z-index: 1000;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.header-center { display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
-.academy-subtitle { font-size: 18px; font-weight: 700; color: var(--text-muted); letter-spacing: 2px; }
-.class-main-title { font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 46px; font-weight: 900; margin: 0; letter-spacing: 1px; background: linear-gradient(135deg, var(--text-main) 30%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 4px 8px rgba(0,0,0,0.06); }
-.date-display { font-size: 14px; font-weight: 600; color: var(--text-muted); font-family: 'Montserrat', 'Pretendard', sans-serif; background: var(--bg-card); padding: 6px 20px; border-radius: 30px; box-shadow: var(--shadow-inner); border: 1px solid var(--border); }
+.header-center { display: flex; flex-direction: column; align-items: center; gap: 6px; text-align: center; }
+.academy-subtitle { font-size: 16px; font-weight: 700; color: var(--text-muted); letter-spacing: 2px; }
+.class-main-title { font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 40px; font-weight: 900; margin: 0; letter-spacing: 1px; background: linear-gradient(135deg, var(--text-main) 30%, var(--accent) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-shadow: 2px 4px 8px rgba(0,0,0,0.06); }
+.date-display { font-size: 13px; font-weight: 600; color: var(--text-muted); font-family: 'Montserrat', 'Pretendard', sans-serif; background: var(--bg-card); padding: 4px 16px; border-radius: 30px; box-shadow: var(--shadow-inner); border: 1px solid var(--border); }
 
 .header-right { position: absolute; right: 40px; display: flex; align-items: center; }
-.st-logo-container { display: flex; align-items: center; gap: 15px; padding: 10px 18px; border-radius: 12px; background: var(--bg-card); box-shadow: var(--shadow-btn); border: 1px solid var(--border); border-left: 5px solid var(--accent); }
-.st-logo-img { height: 32px; width: auto; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1)); }
-.st-title { font-family: 'Montserrat', sans-serif; font-size: 22px; font-weight: 900; color: var(--text-main); line-height: 1; letter-spacing: -0.5px; }
+.st-logo-container { display: flex; align-items: center; gap: 12px; padding: 10px 16px; border-radius: 12px; background: var(--bg-card); box-shadow: var(--shadow-btn); border: 1px solid var(--border); border-left: 5px solid var(--accent); }
+.st-logo-img { height: 28px; width: auto; object-fit: contain; filter: drop-shadow(2px 2px 4px rgba(0,0,0,0.1)); }
+.st-title { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 900; color: var(--text-main); line-height: 1; letter-spacing: -0.5px; }
 .st-version { background: var(--text-main); color: var(--bg-card); padding: 3px 6px; border-radius: 6px; font-family: 'Montserrat', sans-serif; font-size: 11px; font-weight: 800; margin-left: 8px; letter-spacing: 0.5px;}
 
-/* 🌟 하단 네비게이션 바 (Bottom Navigation) */
+/* 하단 네비게이션 바 */
 .sidebar {
-    position: fixed;
-    top: auto; left: 0; bottom: 0; height: 95px;
-    width: 100%; background: var(--bg-main); border-right: none; border-top: 2px solid var(--border);
-    display: flex; flex-direction: row; align-items: center; justify-content: center; padding-top: 0;
+    position: fixed; bottom: 0; left: 0; width: 100%; height: 90px;
+    background: var(--bg-main); border-top: 2px solid var(--border);
+    display: flex; flex-direction: row; align-items: center; justify-content: center; 
     z-index: 1000; box-shadow: 0 -8px 25px rgba(0,0,0,0.08); overflow: visible;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.sidebar-tabs { display: flex; flex-direction: row; gap: 50px; width: auto; align-items: center; }
+.sidebar-tabs { display: flex; flex-direction: row; gap: 40px; width: auto; align-items: center; }
 
 /* 탭 버튼 */
 .nav-tab { 
-    cursor: pointer; border-radius: 50%; width: 65px; height: 65px; flex-shrink: 0;
+    cursor: pointer; border-radius: 50%; width: 60px; height: 60px; flex-shrink: 0;
     background: var(--bg-main); border: 2px solid transparent; box-shadow: var(--shadow-btn); 
     display: flex; align-items: center; justify-content: center; 
     font-family: 'Montserrat', 'Pretendard', sans-serif; 
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.nav-tab .nav-icon { font-size: 32px; line-height: 1; margin: 0; transition: 0.3s; display: block; }
-.nav-tab .nav-text { display: none; } /* 하단바에서는 텍스트 숨김 */
+.nav-tab .nav-icon { font-size: 28px; line-height: 1; margin: 0; transition: 0.3s; display: block; }
+.nav-tab .nav-text { display: none; } 
 
 .nav-tab.active { 
-    transform: translateY(-15px) scale(1.1); 
+    transform: translateY(-12px) scale(1.1); 
     box-shadow: 0 12px 24px rgba(59,130,246,0.3); 
     background: var(--bg-card); 
     border: 3px solid var(--accent); 
 }
 
-/* 본문 컨텐츠 여백: 좌측 여백 없애고 하단 여백 추가 */
-.content-wrapper { flex: 1; margin-left: 0; padding-bottom: 130px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; display: block; }
+/* 🌟 조작이 없을 때 숨기기 위한 클래스 (body에 적용됨) */
+body.ui-hidden .global-header { transform: translateY(-110%); }
+body.ui-hidden .sidebar { transform: translateY(110%); }
+
+/* 본문 영역: 상하단바가 Fixed이므로 패딩 확보 */
+.content-wrapper { flex: 1; padding-top: 110px; padding-bottom: 120px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; display: block; }
 
 /* --------------------------------------------------------------------------
    5. UTILITIES & COMPONENTS 
 -------------------------------------------------------------------------- */
-.view-section { display: none; padding: 40px 60px 40px 60px; animation: fadeIn 0.4s ease; max-width: 1800px; margin: 0 auto; width: 100%; }
+.view-section { display: none; padding: 20px 40px 40px 40px; animation: fadeIn 0.4s ease; max-width: 1800px; margin: 0 auto; width: 100%; }
 .view-section.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -199,72 +203,65 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .btn-3d-sm:active { box-shadow: var(--shadow-inner); transform: scale(0.96) translateY(2px); border-color: transparent; }
 
 /* --------------------------------------------------------------------------
-   6. VIEW: ROSTER (명단창)
+   6. VIEW: ROSTER (명단창 - 🌟 컴팩트하게 축소됨)
 -------------------------------------------------------------------------- */
 .roster-columns-wrapper {
     display: grid;
     grid-template-columns: 1fr 1.7fr 1fr; 
-    gap: 25px;
+    gap: 20px;
     align-items: start;
     width: 100%;
 }
 
 .roster-column {
-    background: var(--bg-main);
-    background-image: var(--box-gradient);
-    border: 2px solid rgba(255,255,255,0.5);
-    border-radius: 24px;
-    padding: 20px;
-    box-shadow: var(--shadow-pop);
-    min-height: 60vh;
-    transition: all 0.3s ease;
+    background: var(--bg-main); background-image: var(--box-gradient);
+    border: 2px solid rgba(255,255,255,0.5); border-radius: 20px;
+    padding: 15px; box-shadow: var(--shadow-pop); min-height: 60vh;
 }
 
 .roster-column.active-col {
-    border: 3px solid var(--accent);
-    box-shadow: var(--shadow-pop), 0 0 25px rgba(59, 130, 246, 0.15);
+    border: 3px solid var(--accent); box-shadow: var(--shadow-pop), 0 0 25px rgba(59, 130, 246, 0.15);
     background-image: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(59, 130, 246, 0.05));
 }
 
 .group-title {
-    font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 22px; font-weight: 900;
-    color: var(--text-main); margin: 0 0 15px 0; padding-bottom: 12px;
-    border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 10px;
+    font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 18px; font-weight: 900;
+    color: var(--text-main); margin: 0 0 12px 0; padding-bottom: 10px;
+    border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px;
 }
-.group-title span.icon-accent { font-weight: 900; }
 
-.student-grid { display: grid; gap: 15px; margin-top: 15px; min-height: 100px; align-content: start; }
+.student-grid { display: grid; gap: 12px; margin-top: 10px; min-height: 80px; align-content: start; }
 
-/* 🌟 리얼 3D 엠보싱 학생 카드 (터치 액션 필수 속성 적용) */
+/* 리얼 3D 엠보싱 학생 카드 공통 */
 .student-btn { 
-    font-weight: 900; 
-    cursor: grab; overflow: hidden; z-index: 1; 
+    font-weight: 900; cursor: grab; overflow: hidden; z-index: 1; 
     display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
-    font-family: 'Pretendard', sans-serif; 
-    touch-action: none; /* 터치 드래그를 위한 필수 CSS */
-    background: var(--btn-gradient);
-    border: none; 
+    font-family: 'Pretendard', sans-serif; touch-action: none; 
+    background: var(--btn-gradient); border: none; 
     box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .student-btn:active { transform: scale(0.96) translateY(2px); box-shadow: var(--shadow-inner); }
 
-#grid-active { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-#grid-active .student-btn { height: 155px; font-size: 46px; border-radius: 22px;}
-#grid-active .student-btn .name-text { margin-top: 5px; margin-bottom: 25px; } 
+/* 🌟 축소된 수업 중 (In class) 카드 */
+#grid-active { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
+#grid-active .student-btn { height: 115px; font-size: 32px; border-radius: 18px;}
+#grid-active .student-btn .name-text { margin-top: 5px; margin-bottom: 15px; } 
 
-#grid-unassigned, #grid-finished { grid-template-columns: repeat(auto-fill, minmax(110px, 1fr)); gap: 12px; }
-#grid-unassigned .student-btn, #grid-finished .student-btn { height: 80px; font-size: 28px; border-radius: 14px;}
-#grid-unassigned .student-btn .name-text, #grid-finished .student-btn .name-text { margin-bottom: 0; margin-top: 5px; } 
-#grid-unassigned .student-btn .level-tag, #grid-finished .student-btn .level-tag { font-size: 11px; padding: 3px 10px; border-radius: 0 0 8px 8px;}
+/* 🌟 축소된 대기 / 완료 카드 */
+#grid-unassigned, #grid-finished { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 10px; }
+#grid-unassigned .student-btn, #grid-finished .student-btn { height: 60px; font-size: 20px; border-radius: 12px;}
+#grid-unassigned .student-btn .name-text, #grid-finished .student-btn .name-text { margin-bottom: 0; margin-top: 3px; } 
+#grid-unassigned .student-btn .level-tag, #grid-finished .student-btn .level-tag { font-size: 10px; padding: 2px 8px; border-radius: 0 0 6px 6px;}
 #grid-unassigned .student-btn .status-badge, #grid-finished .student-btn .status-badge { display: none !important; } 
 
+/* --- 공통 요소 --- */
 .student-btn .gauge-bg, .student-btn .name-text, .student-btn .level-tag, .student-btn .status-badge { pointer-events: none; }
 .gauge-bg { position: absolute; top: 0; left: 0; height: 100%; width: 0%; z-index: -1; transition: width 0.5s ease; border-radius: 12px 0 0 12px; }
-.name-text { position: relative; z-index: 2; color: var(--custom-name-color); text-shadow: 1px 1px 2px rgba(255,255,255,0.6), -1px -1px 2px rgba(0,0,0,0.05), var(--custom-name-shadow); letter-spacing: 2px; transition: all 0.3s; }
+.name-text { position: relative; z-index: 2; color: var(--custom-name-color); text-shadow: 1px 1px 2px rgba(255,255,255,0.6), -1px -1px 2px rgba(0,0,0,0.05), var(--custom-name-shadow); letter-spacing: 1px; transition: all 0.3s; }
 
 .timer-link-btn {
-    position: absolute; top: 10px; left: 10px; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 8px;
+    position: absolute; top: 8px; left: 8px; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 6px;
     background: var(--bg-main); color: var(--text-main); box-shadow: var(--shadow-btn); border: 1px solid var(--border);
     cursor: pointer; z-index: 10; display: none; align-items: center; gap: 4px; font-family: 'Pretendard', sans-serif; transition: all 0.2s;
 }
@@ -272,20 +269,20 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .timer-link-btn:active { box-shadow: var(--shadow-inner); transform: scale(0.95); }
 #grid-active .student-btn.attended .timer-link-btn { display: flex; }
 
-.quick-controls { display: none; position: absolute; bottom: 10px; left: 0; width: 100%; justify-content: center; gap: 8px; z-index: 10; padding: 0 15px; }
+.quick-controls { display: none; position: absolute; bottom: 8px; left: 0; width: 100%; justify-content: center; gap: 6px; z-index: 10; padding: 0 10px; }
 #grid-active .student-btn.attended .quick-controls, #grid-active .student-btn.playing .quick-controls, #grid-active .student-btn.alarm-blink .quick-controls { display: flex; }
 
-.quick-btn { flex: 1; padding: 8px 0; border-radius: 12px; font-size: 14px; font-weight: 900; border: none; box-shadow: var(--shadow-btn); cursor: pointer; transition: 0.2s; color: white; font-family: 'Pretendard', sans-serif; }
+.quick-btn { flex: 1; padding: 6px 0; border-radius: 10px; font-size: 12px; font-weight: 900; border: none; box-shadow: var(--shadow-btn); cursor: pointer; transition: 0.2s; color: white; font-family: 'Pretendard', sans-serif; }
 .quick-btn.q-start { background: linear-gradient(135deg, var(--brand-success), #059669); text-shadow: 0 1px 2px rgba(0,0,0,0.2); pointer-events: auto; }
 .quick-btn.q-finish { background: linear-gradient(135deg, var(--accent), #2563eb); text-shadow: 0 1px 2px rgba(0,0,0,0.2); pointer-events: auto; }
 .quick-btn:active { transform: scale(0.95) translateY(2px); box-shadow: var(--shadow-inner); }
 .student-btn.playing .q-start, .student-btn.alarm-blink .q-start { opacity: 0.4; cursor: not-allowed; }
 
-.alarm-alert-text { display: none; position: relative; z-index: 2; font-size: 16px; font-weight: 900; color: #991b1b; letter-spacing: 1px; text-shadow: none; margin-bottom: 2px; animation: blinker 0.6s linear infinite; }
+.alarm-alert-text { display: none; position: relative; z-index: 2; font-size: 14px; font-weight: 900; color: #991b1b; letter-spacing: 1px; text-shadow: none; margin-bottom: 2px; animation: blinker 0.6s linear infinite; }
 @keyframes blinker { 50% { opacity: 0.4; } }
 
-.level-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-family: 'Montserrat', sans-serif; font-weight: 900; z-index: 4; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 0 0 12px 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 1px 1px 3px rgba(255,255,255,0.4); transition: all 0.3s; }
-#grid-active .student-btn .level-tag { font-size: 13px; padding: 5px 16px; }
+.level-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-family: 'Montserrat', sans-serif; font-weight: 900; z-index: 4; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 1px 1px 3px rgba(255,255,255,0.4); transition: all 0.3s; }
+#grid-active .student-btn .level-tag { font-size: 11px; padding: 4px 12px; }
 
 .level-PRE { border-color: var(--selena-yellow); background: linear-gradient(135deg, rgba(255, 215, 0, 0.45) 0%, rgba(255, 215, 0, 0.1) 100%); } .level-PRE .gauge-bg { background: rgba(255, 215, 0, 0.8); } .level-PRE .level-tag { background: var(--selena-yellow); color: #000; } 
 .level-BASIC { border-color: var(--selena-pink); background: linear-gradient(135deg, rgba(255, 0, 163, 0.35) 0%, rgba(255, 0, 163, 0.05) 100%); } .level-BASIC .gauge-bg { background: rgba(255, 0, 163, 0.7); } .level-BASIC .level-tag { background: var(--selena-pink); color: #fff; }
@@ -293,12 +290,28 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .level-ADV { border-color: var(--selena-cyan); background: linear-gradient(135deg, rgba(33, 199, 250, 0.4) 0%, rgba(33, 199, 250, 0.1) 100%); } .level-ADV .gauge-bg { background: rgba(33, 199, 250, 0.75); } .level-ADV .level-tag { background: var(--selena-cyan); color: #fff; }
 .level-PREP { border-color: var(--selena-brown); background: linear-gradient(135deg, rgba(121, 85, 72, 0.3) 0%, rgba(121, 85, 72, 0.05) 100%); } .level-PREP .gauge-bg { background: rgba(121, 85, 72, 0.7); } .level-PREP .level-tag { background: var(--selena-brown); color: #fff; }
 
-.status-badge { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 8px; transition: 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 5; font-family: 'Pretendard', sans-serif; }
+.status-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 6px; transition: 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 5; font-family: 'Pretendard', sans-serif; }
 .student-btn.attended .status-badge { background: var(--brand-success); color: white; border: 1px solid rgba(255,255,255,0.4); }
 .student-btn.playing .status-badge { background: var(--accent); color: #fff; border: 1px solid rgba(255,255,255,0.4); }
 .student-btn.finished { opacity: 0.6; filter: grayscale(80%); box-shadow: var(--shadow-inner); background: var(--bg-main); border-color: transparent;}
 .student-btn.finished .status-badge { background: transparent; color: var(--text-muted); box-shadow: none; border: 1px solid var(--border); }
 .student-btn.drag-over { transform: scale(1.05); box-shadow: var(--shadow-pop) !important; border: 3px solid var(--accent); z-index: 10; } 
+
+/* 추가 UI 효과 */
+.btn-3d:hover, .btn-3d-sm:hover, .action-btn:hover, .student-btn:hover, .quick-btn:hover, .timer-link-btn:hover {
+    transform: translateY(-3px); filter: brightness(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.9); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10;
+}
+
+#grid-active .student-btn.attended:not(.playing):not(.alarm-blink) .status-badge { display: none !important; }
+
+@keyframes intense-neon-pulse {
+    0% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); }
+    50% { box-shadow: 0 0 30px rgba(59, 130, 246, 1), inset 0 0 20px rgba(59, 130, 246, 0.6); border-color: #3b82f6; background-color: rgba(59, 130, 246, 0.08) !important; }
+    100% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); }
+}
+
+.student-btn.playing { animation: intense-neon-pulse 1.5s infinite ease-in-out !important; border: 3px solid #3b82f6 !important; transform: scale(1.03); z-index: 5; }
+#grid-active .student-btn.attended:not(.playing):not(.alarm-blink) { opacity: 0.95; transform: scale(0.98); filter: none; border: 2px dashed rgba(0,0,0,0.2); }
 
 /* --------------------------------------------------------------------------
    7. VIEW: TIMER (타이머)
@@ -311,12 +324,8 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 
 .desk-id { font-size: 24px; font-family: 'Montserrat', sans-serif; color: var(--text-muted); font-weight: 900; background: transparent; padding: 0; margin-bottom: 12px; letter-spacing: 2px; }
 
-/* 🌟 터치 드래그 지원을 위한 touch-action 속성 추가 */
-.info-panel { 
-    width: 100%; border-radius: 20px; padding: 18px 0; text-align: center; margin-bottom: 25px; cursor: grab; transition: all 0.3s; 
-    box-shadow: var(--shadow-inner); border: 1px solid rgba(0,0,0,0.05);
-    touch-action: none; 
-}
+.info-panel { width: 100%; border-radius: 20px; padding: 18px 0; text-align: center; margin-bottom: 25px; cursor: grab; transition: all 0.3s; box-shadow: var(--shadow-inner); border: 1px solid rgba(0,0,0,0.05); touch-action: none; }
+.timer-box.playing .info-panel { animation: intense-neon-pulse 1.5s infinite ease-in-out !important; border: 3px solid #3b82f6 !important; }
 
 .timer-bg-PRE { background: rgba(255, 215, 0, 0.35); }
 .timer-bg-BASIC { background: rgba(255, 0, 163, 0.25); }
@@ -338,7 +347,6 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 
 .btn-start { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4), inset 2px 2px 6px rgba(255,255,255,0.5), inset -2px -2px 6px rgba(0,0,0,0.2); border: none; font-size: 20px; padding: 22px; width: 100%; }
 .btn-start:active { transform: translateY(3px); box-shadow: inset 4px 4px 10px rgba(0,0,0,0.3); }
-
 .btn-finish { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4), inset 2px 2px 6px rgba(255,255,255,0.5), inset -2px -2px 6px rgba(0,0,0,0.2); border: none; width: 100%; font-size: 19px; padding: 20px; }
 .btn-finish:active { transform: translateY(3px); box-shadow: inset 4px 4px 10px rgba(0,0,0,0.3); }
 
@@ -353,7 +361,7 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 
 .student-btn.alarm-blink { animation: modern-alarm-glow 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important; z-index: 20; background-image: none !important; border: 3px solid var(--brand-danger); }
 .student-btn.alarm-blink .gauge-bg, .student-btn.alarm-blink .level-tag, .student-btn.alarm-blink .status-badge, .student-btn.alarm-blink .timer-link-btn { display: none !important; } 
-.student-btn.alarm-blink .name-text { color: var(--brand-danger) !important; text-shadow: 0 2px 10px rgba(239, 68, 68, 0.3) !important; margin-top: -10px; margin-bottom: 25px; font-size: 42px; } 
+.student-btn.alarm-blink .name-text { color: var(--brand-danger) !important; text-shadow: 0 2px 10px rgba(239, 68, 68, 0.3) !important; margin-top: -5px; margin-bottom: 15px; font-size: 32px; } 
 .student-btn.alarm-blink .alarm-alert-text { display: block; margin-top: -5px;} 
 
 .timer-box.done { animation: modern-alarm-glow 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important; background-image: none !important; border: 3px solid var(--brand-danger); }
@@ -361,23 +369,6 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .timer-box.done .student-name-display { color: var(--brand-danger) !important; text-shadow: 0 2px 10px rgba(239, 68, 68, 0.3) !important; font-weight: 900;}
 .timer-box.done .time-display { color: var(--brand-danger) !important; font-weight: 900; text-shadow: 0 0 10px rgba(239, 68, 68, 0.6); }
 .timer-box.done .desk-id { color: #000000 !important; font-weight: 900;}
-
-/* 추가 UI 효과 */
-.btn-3d:hover, .btn-3d-sm:hover, .action-btn:hover, .student-btn:hover, .quick-btn:hover, .timer-link-btn:hover {
-    transform: translateY(-3px); filter: brightness(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.9); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10;
-}
-
-#grid-active .student-btn.attended:not(.playing):not(.alarm-blink) .status-badge { display: none !important; }
-
-@keyframes intense-neon-pulse {
-    0% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); }
-    50% { box-shadow: 0 0 30px rgba(59, 130, 246, 1), inset 0 0 20px rgba(59, 130, 246, 0.6); border-color: #3b82f6; background-color: rgba(59, 130, 246, 0.08) !important; }
-    100% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); }
-}
-
-.student-btn.playing { animation: intense-neon-pulse 1.5s infinite ease-in-out !important; border: 3px solid #3b82f6 !important; transform: scale(1.03); z-index: 5; }
-#grid-active .student-btn.attended:not(.playing):not(.alarm-blink) { opacity: 0.95; transform: scale(0.98); filter: none; border: 2px dashed rgba(0,0,0,0.2); }
-.timer-box.playing .info-panel { animation: intense-neon-pulse 1.5s infinite ease-in-out !important; border: 3px solid #3b82f6 !important; }
 
 /* --------------------------------------------------------------------------
    8. VIEW: LOG & SETTINGS
@@ -434,7 +425,7 @@ select { cursor: pointer; text-align: left; }
                 <img src="st flow.png" alt="ST Flow Logo" class="st-logo-img" onerror="this.style.display='none'">
                 <div style="display: flex; align-items: center;">
                     <span class="st-title">ST Flow</span>
-                    <span class="st-version">v5.5.0</span>
+                    <span class="st-version">v5.6.0</span>
                 </div>
             </div>
         </div>
@@ -693,23 +684,20 @@ select { cursor: pointer; text-align: left; }
                 </div>
             </section>
             
-            <footer class="global-footer">
-                Designed & Developed by <span>Tony (ShinJungHoon)</span>
-            </footer>
         </main>
         
-        <aside class="sidebar">
+        <aside class="sidebar" id="bottomNav">
             <nav class="sidebar-tabs" id="navTabs">
-                <div class="nav-tab active btn-3d" onclick="switchView('roster')">
+                <div class="nav-tab active" onclick="switchView('roster')">
                     <span class="nav-icon">📋</span><span class="nav-text" data-i18n="nav1">명단</span>
                 </div>
-                <div class="nav-tab btn-3d" onclick="switchView('timer')">
+                <div class="nav-tab" onclick="switchView('timer')">
                     <span class="nav-icon">⏰</span><span class="nav-text" data-i18n="nav2">타이머</span>
                 </div>
-                <div class="nav-tab btn-3d" onclick="switchView('log')">
+                <div class="nav-tab" onclick="switchView('log')">
                     <span class="nav-icon">📊</span><span class="nav-text" data-i18n="nav3">기록</span>
                 </div>
-                <div class="nav-tab btn-3d" onclick="switchView('settings')">
+                <div class="nav-tab" onclick="switchView('settings')">
                     <span class="nav-icon">⚙️</span><span class="nav-text" data-i18n="nav4">설정</span>
                 </div>
             </nav>
@@ -719,6 +707,29 @@ select { cursor: pointer; text-align: left; }
 </div>
 
 <script>
+// ==========================================
+// 🌟 UI 자동 숨김 로직 (Inactivity Timer)
+// ==========================================
+let uiTimer = null;
+function resetUITimer() {
+    // 설정창이나 인풋에 커서가 있을 때는 숨기지 않음
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.isContentEditable)) return;
+    
+    document.body.classList.remove('ui-hidden');
+    clearTimeout(uiTimer);
+    
+    uiTimer = setTimeout(() => {
+        document.body.classList.add('ui-hidden');
+    }, 3500); // 3.5초 조작 없으면 자동 숨김
+}
+
+// 화면 터치, 마우스 이동, 클릭, 스크롤 시 타이머 리셋
+document.addEventListener('touchstart', resetUITimer, {passive: true});
+document.addEventListener('mousemove', resetUITimer);
+document.addEventListener('click', resetUITimer);
+document.addEventListener('scroll', resetUITimer, true);
+resetUITimer(); // 초기 실행
+
 // ==========================================
 // 1. APP STATE, I18N & VARIABLES
 // ==========================================
