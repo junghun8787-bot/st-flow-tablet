@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ST Flow v5.6.0 (Tablet Full-Screen Edition)</title>
+<title>ST Flow v5.6.1 (Tablet Full-Screen Edition)</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.css">
 <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
@@ -124,7 +124,7 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .body-layout { display: flex; flex: 1; overflow: hidden; position: relative; min-height: 0; }
 
 /* --------------------------------------------------------------------------
-   🌟 4. HEADER & BOTTOM NAV (풀스크린 자동 숨김 적용)
+   🌟 4. HEADER & BOTTOM NAV (풀스크린 자동 숨김 적용 - 로직 개선)
 -------------------------------------------------------------------------- */
 .global-header { 
     position: fixed; top: 0; left: 0; width: 100%;
@@ -173,17 +173,28 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
     border: 3px solid var(--accent); 
 }
 
-/* 🌟 조작이 없을 때 숨기기 위한 클래스 (body에 적용됨) */
-body.ui-hidden .global-header { transform: translateY(-110%); }
-body.ui-hidden .sidebar { transform: translateY(110%); }
+/* 🌟 조작이 없을 때 숨기기 위한 클래스 (!important 로 우선순위 강화) */
+body.ui-hidden .global-header { transform: translateY(-120%) !important; }
+body.ui-hidden #bottomNav { transform: translateY(120%) !important; }
 
-/* 본문 영역: 상하단바가 Fixed이므로 패딩 확보 */
-.content-wrapper { flex: 1; padding-top: 110px; padding-bottom: 120px; overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; display: block; }
+/* 🌟 본문 영역: 메뉴가 숨겨지면 명단창이 화면 꽉 차게 위아래로 확장됨 */
+.content-wrapper { 
+    flex: 1; 
+    padding-top: 120px; /* 헤더 공간 확보 */
+    padding-bottom: 120px; /* 하단바 공간 확보 */
+    overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; 
+    display: block; 
+    transition: padding 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* 패딩도 부드럽게 애니메이션 */
+}
+body.ui-hidden .content-wrapper { 
+    padding-top: 20px !important; 
+    padding-bottom: 20px !important; 
+}
 
 /* --------------------------------------------------------------------------
    5. UTILITIES & COMPONENTS 
 -------------------------------------------------------------------------- */
-.view-section { display: none; padding: 20px 40px 40px 40px; animation: fadeIn 0.4s ease; max-width: 1800px; margin: 0 auto; width: 100%; }
+.view-section { display: none; padding: 10px 40px 40px 40px; animation: fadeIn 0.4s ease; max-width: 1800px; margin: 0 auto; width: 100%; }
 .view-section.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -403,11 +414,6 @@ select { cursor: pointer; text-align: left; }
 .admin-btn { padding: 20px; border-radius: 18px; color: var(--text-main); font-weight: 900; cursor: pointer; font-size: 16px; display:flex; align-items:center; justify-content:center; gap:10px; width: 100%; font-family: 'Montserrat', 'Pretendard', sans-serif; letter-spacing: 1px; }
 .admin-btn.primary { background: linear-gradient(135deg, var(--accent), #2563eb); color: #fff; border:none; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4), inset 2px 2px 5px rgba(255,255,255,0.4); }
 
-/* --------------------------------------------------------------------------
-   9. FOOTER
--------------------------------------------------------------------------- */
-.global-footer { text-align: center; padding: 40px 20px 0 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 15px; font-weight: 600; letter-spacing: 1px; }
-.global-footer span { color: var(--accent); font-weight: 900; }
 </style>
 </head>
 <body>
@@ -425,7 +431,7 @@ select { cursor: pointer; text-align: left; }
                 <img src="st flow.png" alt="ST Flow Logo" class="st-logo-img" onerror="this.style.display='none'">
                 <div style="display: flex; align-items: center;">
                     <span class="st-title">ST Flow</span>
-                    <span class="st-version">v5.6.0</span>
+                    <span class="st-version">v5.6.1</span>
                 </div>
             </div>
         </div>
@@ -708,30 +714,39 @@ select { cursor: pointer; text-align: left; }
 
 <script>
 // ==========================================
-// 🌟 UI 자동 숨김 로직 (Inactivity Timer)
+// 🌟 1. UI 자동 숨김 로직 (Inactivity Timer 최적화)
 // ==========================================
 let uiTimer = null;
 function resetUITimer() {
-    // 설정창이나 인풋에 커서가 있을 때는 숨기지 않음
-    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.isContentEditable)) return;
+    // 설정창 인풋(텍스트, 입력 등)에 포커스가 있을 때는 숨기지 않음
+    if (document.activeElement && 
+       (document.activeElement.tagName === 'INPUT' || 
+        document.activeElement.tagName === 'TEXTAREA' || 
+        document.activeElement.getAttribute('contenteditable') === 'true')) {
+        clearTimeout(uiTimer);
+        return;
+    }
     
+    // UI 다시 보이기
     document.body.classList.remove('ui-hidden');
     clearTimeout(uiTimer);
     
+    // 4초 후 숨김 처리
     uiTimer = setTimeout(() => {
         document.body.classList.add('ui-hidden');
-    }, 3500); // 3.5초 조작 없으면 자동 숨김
+    }, 4000); 
 }
 
-// 화면 터치, 마우스 이동, 클릭, 스크롤 시 타이머 리셋
-document.addEventListener('touchstart', resetUITimer, {passive: true});
-document.addEventListener('mousemove', resetUITimer);
-document.addEventListener('click', resetUITimer);
-document.addEventListener('scroll', resetUITimer, true);
-resetUITimer(); // 초기 실행
+// 터치, 클릭, 스크롤 같은 확실한 조작에만 초기화 반응 (민감한 hover 무시)
+window.addEventListener('touchstart', resetUITimer, {passive: true});
+window.addEventListener('mousedown', resetUITimer);
+window.addEventListener('click', resetUITimer);
+window.addEventListener('scroll', resetUITimer, true);
+
+resetUITimer(); // 초기화 실행
 
 // ==========================================
-// 1. APP STATE, I18N & VARIABLES
+// 2. APP STATE, I18N & VARIABLES
 // ==========================================
 const STORAGE_KEY = "samsung_timer_v36_ARCHITECTURE"; 
 let DESK_COUNT = 10; 
