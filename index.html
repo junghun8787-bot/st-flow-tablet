@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>ST Flow v5.6.1 (Tablet Full-Screen Edition)</title>
+<title>ST Flow v5.6.2 (Tablet Compact & Smooth Edition)</title>
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.css">
 <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
@@ -22,10 +22,10 @@
    1. FONTS & VARIABLES
    2. COLOR THEMES (30종)
    3. RESET & BASE
-   4. HEADER & BOTTOM NAV (풀스크린 자동 숨김)
+   4. HEADER & BOTTOM NAV
    5. UTILITIES & COMPONENTS
-   6. VIEW: ROSTER (명단창 컴팩트 사이즈)
-   7. VIEW: TIMER (타이머창) 
+   6. VIEW: ROSTER
+   7. VIEW: TIMER (컴팩트 최적화 & GPU 가속) 
    8. VIEW: LOG & SETTINGS
    9. FOOTER
 ========================================================================== */
@@ -124,7 +124,7 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .body-layout { display: flex; flex: 1; overflow: hidden; position: relative; min-height: 0; }
 
 /* --------------------------------------------------------------------------
-   🌟 4. HEADER & BOTTOM NAV (풀스크린 자동 숨김 적용 - 로직 개선)
+   4. HEADER & BOTTOM NAV
 -------------------------------------------------------------------------- */
 .global-header { 
     position: fixed; top: 0; left: 0; width: 100%;
@@ -173,28 +173,28 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
     border: 3px solid var(--accent); 
 }
 
-/* 🌟 조작이 없을 때 숨기기 위한 클래스 (!important 로 우선순위 강화) */
+/* 숨기기 클래스 */
 body.ui-hidden .global-header { transform: translateY(-120%) !important; }
 body.ui-hidden #bottomNav { transform: translateY(120%) !important; }
 
-/* 🌟 본문 영역: 메뉴가 숨겨지면 명단창이 화면 꽉 차게 위아래로 확장됨 */
+/* 본문 영역 */
 .content-wrapper { 
-    flex: 1; 
-    padding-top: 120px; /* 헤더 공간 확보 */
-    padding-bottom: 120px; /* 하단바 공간 확보 */
-    overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; 
-    display: block; 
-    transition: padding 0.5s cubic-bezier(0.4, 0, 0.2, 1); /* 패딩도 부드럽게 애니메이션 */
+    flex: 1; padding-top: 120px; padding-bottom: 120px; 
+    overflow-y: auto; overflow-x: hidden; scroll-behavior: smooth; -webkit-overflow-scrolling: touch; display: block; 
+    transition: padding 0.5s cubic-bezier(0.4, 0, 0.2, 1); 
 }
-body.ui-hidden .content-wrapper { 
-    padding-top: 20px !important; 
-    padding-bottom: 20px !important; 
-}
+body.ui-hidden .content-wrapper { padding-top: 20px !important; padding-bottom: 20px !important; }
 
 /* --------------------------------------------------------------------------
    5. UTILITIES & COMPONENTS 
 -------------------------------------------------------------------------- */
-.view-section { display: none; padding: 10px 40px 40px 40px; animation: fadeIn 0.4s ease; max-width: 1800px; margin: 0 auto; width: 100%; }
+/* 🌟 하드웨어 가속 적용 (GPU 랜더링으로 버벅임 완벽 해소) */
+.view-section { 
+    display: none; padding: 10px 40px 40px 40px; 
+    animation: fadeIn 0.3s ease; max-width: 1800px; margin: 0 auto; width: 100%; 
+    will-change: opacity, transform; 
+    transform: translateZ(0); 
+}
 .view-section.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
 
@@ -214,68 +214,35 @@ body.ui-hidden .content-wrapper {
 .btn-3d-sm:active { box-shadow: var(--shadow-inner); transform: scale(0.96) translateY(2px); border-color: transparent; }
 
 /* --------------------------------------------------------------------------
-   6. VIEW: ROSTER (명단창 - 🌟 컴팩트하게 축소됨)
+   6. VIEW: ROSTER
 -------------------------------------------------------------------------- */
-.roster-columns-wrapper {
-    display: grid;
-    grid-template-columns: 1fr 1.7fr 1fr; 
-    gap: 20px;
-    align-items: start;
-    width: 100%;
-}
+.roster-columns-wrapper { display: grid; grid-template-columns: 1fr 1.7fr 1fr; gap: 20px; align-items: start; width: 100%; }
 
-.roster-column {
-    background: var(--bg-main); background-image: var(--box-gradient);
-    border: 2px solid rgba(255,255,255,0.5); border-radius: 20px;
-    padding: 15px; box-shadow: var(--shadow-pop); min-height: 60vh;
-}
+.roster-column { background: var(--bg-main); background-image: var(--box-gradient); border: 2px solid rgba(255,255,255,0.5); border-radius: 20px; padding: 15px; box-shadow: var(--shadow-pop); min-height: 60vh; }
+.roster-column.active-col { border: 3px solid var(--accent); box-shadow: var(--shadow-pop), 0 0 25px rgba(59, 130, 246, 0.15); background-image: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(59, 130, 246, 0.05)); }
 
-.roster-column.active-col {
-    border: 3px solid var(--accent); box-shadow: var(--shadow-pop), 0 0 25px rgba(59, 130, 246, 0.15);
-    background-image: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(59, 130, 246, 0.05));
-}
-
-.group-title {
-    font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 18px; font-weight: 900;
-    color: var(--text-main); margin: 0 0 12px 0; padding-bottom: 10px;
-    border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px;
-}
+.group-title { font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 12px 0; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
 
 .student-grid { display: grid; gap: 12px; margin-top: 10px; min-height: 80px; align-content: start; }
 
-/* 리얼 3D 엠보싱 학생 카드 공통 */
-.student-btn { 
-    font-weight: 900; cursor: grab; overflow: hidden; z-index: 1; 
-    display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative;
-    font-family: 'Pretendard', sans-serif; touch-action: none; 
-    background: var(--btn-gradient); border: none; 
-    box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
+.student-btn { font-weight: 900; cursor: grab; overflow: hidden; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; font-family: 'Pretendard', sans-serif; touch-action: none; background: var(--btn-gradient); border: none; box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; transform: translateZ(0); }
 .student-btn:active { transform: scale(0.96) translateY(2px); box-shadow: var(--shadow-inner); }
 
-/* 🌟 축소된 수업 중 (In class) 카드 */
 #grid-active { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; }
 #grid-active .student-btn { height: 115px; font-size: 32px; border-radius: 18px;}
 #grid-active .student-btn .name-text { margin-top: 5px; margin-bottom: 15px; } 
 
-/* 🌟 축소된 대기 / 완료 카드 */
 #grid-unassigned, #grid-finished { grid-template-columns: repeat(auto-fill, minmax(85px, 1fr)); gap: 10px; }
 #grid-unassigned .student-btn, #grid-finished .student-btn { height: 60px; font-size: 20px; border-radius: 12px;}
 #grid-unassigned .student-btn .name-text, #grid-finished .student-btn .name-text { margin-bottom: 0; margin-top: 3px; } 
 #grid-unassigned .student-btn .level-tag, #grid-finished .student-btn .level-tag { font-size: 10px; padding: 2px 8px; border-radius: 0 0 6px 6px;}
 #grid-unassigned .student-btn .status-badge, #grid-finished .student-btn .status-badge { display: none !important; } 
 
-/* --- 공통 요소 --- */
 .student-btn .gauge-bg, .student-btn .name-text, .student-btn .level-tag, .student-btn .status-badge { pointer-events: none; }
 .gauge-bg { position: absolute; top: 0; left: 0; height: 100%; width: 0%; z-index: -1; transition: width 0.5s ease; border-radius: 12px 0 0 12px; }
 .name-text { position: relative; z-index: 2; color: var(--custom-name-color); text-shadow: 1px 1px 2px rgba(255,255,255,0.6), -1px -1px 2px rgba(0,0,0,0.05), var(--custom-name-shadow); letter-spacing: 1px; transition: all 0.3s; }
 
-.timer-link-btn {
-    position: absolute; top: 8px; left: 8px; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 6px;
-    background: var(--bg-main); color: var(--text-main); box-shadow: var(--shadow-btn); border: 1px solid var(--border);
-    cursor: pointer; z-index: 10; display: none; align-items: center; gap: 4px; font-family: 'Pretendard', sans-serif; transition: all 0.2s;
-}
+.timer-link-btn { position: absolute; top: 8px; left: 8px; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 6px; background: var(--bg-main); color: var(--text-main); box-shadow: var(--shadow-btn); border: 1px solid var(--border); cursor: pointer; z-index: 10; display: none; align-items: center; gap: 4px; font-family: 'Pretendard', sans-serif; transition: all 0.2s; }
 .timer-link-btn:hover { color: var(--accent); border-color: var(--accent); }
 .timer-link-btn:active { box-shadow: var(--shadow-inner); transform: scale(0.95); }
 #grid-active .student-btn.attended .timer-link-btn { display: flex; }
@@ -308,10 +275,7 @@ body.ui-hidden .content-wrapper {
 .student-btn.finished .status-badge { background: transparent; color: var(--text-muted); box-shadow: none; border: 1px solid var(--border); }
 .student-btn.drag-over { transform: scale(1.05); box-shadow: var(--shadow-pop) !important; border: 3px solid var(--accent); z-index: 10; } 
 
-/* 추가 UI 효과 */
-.btn-3d:hover, .btn-3d-sm:hover, .action-btn:hover, .student-btn:hover, .quick-btn:hover, .timer-link-btn:hover {
-    transform: translateY(-3px); filter: brightness(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.9); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10;
-}
+.btn-3d:hover, .btn-3d-sm:hover, .action-btn:hover, .student-btn:hover, .quick-btn:hover, .timer-link-btn:hover { transform: translateY(-3px); filter: brightness(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.9); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
 
 #grid-active .student-btn.attended:not(.playing):not(.alarm-blink) .status-badge { display: none !important; }
 
@@ -321,22 +285,32 @@ body.ui-hidden .content-wrapper {
     100% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); }
 }
 
-.student-btn.playing { animation: intense-neon-pulse 1.5s infinite ease-in-out !important; border: 3px solid #3b82f6 !important; transform: scale(1.03); z-index: 5; }
+.student-btn.playing { animation: intense-neon-pulse 1.5s infinite ease-in-out !important; border: 3px solid #3b82f6 !important; transform: scale(1.03) translateZ(0); z-index: 5; will-change: box-shadow; }
 #grid-active .student-btn.attended:not(.playing):not(.alarm-blink) { opacity: 0.95; transform: scale(0.98); filter: none; border: 2px dashed rgba(0,0,0,0.2); }
 
 /* --------------------------------------------------------------------------
-   7. VIEW: TIMER (타이머)
+   🌟 7. VIEW: TIMER (타이머창 컴팩트 최적화 & 5단 배열)
 -------------------------------------------------------------------------- */
-.timer-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 30px; margin-top: 10px;}
+.timer-grid { 
+    display: grid; 
+    /* 최소 넓이를 190px로 줄여 태블릿 가로화면에서 약 5개가 쏙 들어가게 만듭니다 */
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); 
+    gap: 15px; margin-top: 10px;
+}
 
-.timer-box { background: var(--btn-gradient); padding: 25px; border-radius: 28px; border: none; box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05); display: flex; flex-direction: column; align-items: center; position: relative; transition: all 0.2s; }
+.timer-box { 
+    background: var(--btn-gradient); padding: 15px; border-radius: 20px; border: none; 
+    box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05); 
+    display: flex; flex-direction: column; align-items: center; position: relative; transition: all 0.2s; 
+    transform: translateZ(0); /* 🌟 개별 박스 GPU 가속 추가 */
+}
 .timer-box > * { z-index: 1; position: relative; } 
-.timer-box.drag-over { transform: scale(1.03) !important; box-shadow: var(--shadow-pop) !important; border: 3px solid var(--accent); }
+.timer-box.drag-over { transform: scale(1.03) translateZ(0) !important; box-shadow: var(--shadow-pop) !important; border: 3px solid var(--accent); }
 
-.desk-id { font-size: 24px; font-family: 'Montserrat', sans-serif; color: var(--text-muted); font-weight: 900; background: transparent; padding: 0; margin-bottom: 12px; letter-spacing: 2px; }
+.desk-id { font-size: 18px; font-family: 'Montserrat', sans-serif; color: var(--text-muted); font-weight: 900; background: transparent; padding: 0; margin-bottom: 8px; letter-spacing: 1px; }
 
-.info-panel { width: 100%; border-radius: 20px; padding: 18px 0; text-align: center; margin-bottom: 25px; cursor: grab; transition: all 0.3s; box-shadow: var(--shadow-inner); border: 1px solid rgba(0,0,0,0.05); touch-action: none; }
-.timer-box.playing .info-panel { animation: intense-neon-pulse 1.5s infinite ease-in-out !important; border: 3px solid #3b82f6 !important; }
+.info-panel { width: 100%; border-radius: 16px; padding: 12px 0; text-align: center; margin-bottom: 15px; cursor: grab; transition: all 0.3s; box-shadow: var(--shadow-inner); border: 1px solid rgba(0,0,0,0.05); touch-action: none; transform: translateZ(0); }
+.timer-box.playing .info-panel { animation: intense-neon-pulse 1.5s infinite ease-in-out !important; border: 2px solid #3b82f6 !important; will-change: box-shadow; }
 
 .timer-bg-PRE { background: rgba(255, 215, 0, 0.35); }
 .timer-bg-BASIC { background: rgba(255, 0, 163, 0.25); }
@@ -344,38 +318,27 @@ body.ui-hidden .content-wrapper {
 .timer-bg-ADV { background: rgba(33, 199, 250, 0.3); }
 .timer-bg-PREP { background: rgba(121, 85, 72, 0.2); }
 
-.student-name-display { font-size: 42px; font-weight: 900; color: var(--custom-name-color); margin: 0 0 8px 0; text-shadow: var(--custom-name-shadow); letter-spacing: 1px; min-height: 50px;}
-.time-display { font-family: 'JetBrains Mono', monospace; font-size: 58px; color: var(--time-color); font-weight: 800; line-height: 1; letter-spacing: -2px; text-shadow: 0px 2px 4px rgba(0,0,0,0.15); }
+.student-name-display { font-size: 26px; font-weight: 900; color: var(--custom-name-color); margin: 0 0 4px 0; text-shadow: var(--custom-name-shadow); letter-spacing: 1px; min-height: 32px;}
+.time-display { font-family: 'JetBrains Mono', monospace; font-size: 40px; color: var(--time-color); font-weight: 800; line-height: 1; letter-spacing: -1px; text-shadow: 0px 2px 4px rgba(0,0,0,0.15); }
 
-.time-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; width: 100%; margin-bottom: 20px; }
-.time-btn { padding: 12px 0; font-size: 16px; font-weight: 800; font-family: 'JetBrains Mono', monospace; cursor: pointer; }
+.time-controls { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; width: 100%; margin-bottom: 12px; }
+.time-btn { padding: 8px 0; font-size: 13px; font-weight: 800; font-family: 'JetBrains Mono', monospace; cursor: pointer; }
 .time-btn.minus { color: var(--text-muted); }
 .time-btn.clear { background: var(--bg-main); color: var(--brand-danger); font-family: 'Montserrat', sans-serif; grid-column: span 1; }
 
-.action-btn-row { display: flex; gap: 12px; width: 100%; margin-bottom: 12px; }
+.action-btn-row { display: flex; gap: 8px; width: 100%; margin-bottom: 8px; }
 .action-btn-row:last-child { margin-bottom: 0; }
-.action-btn { flex: 1; padding: 18px; border-radius: 16px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 17px; letter-spacing: 1px; border: 2px solid rgba(255,255,255,0.3); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+.action-btn { flex: 1; padding: 12px; border-radius: 12px; font-weight: 900; cursor: pointer; font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 14px; letter-spacing: 1px; border: 1px solid rgba(255,255,255,0.3); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
 
-.btn-start { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 8px 20px rgba(16, 185, 129, 0.4), inset 2px 2px 6px rgba(255,255,255,0.5), inset -2px -2px 6px rgba(0,0,0,0.2); border: none; font-size: 20px; padding: 22px; width: 100%; }
-.btn-start:active { transform: translateY(3px); box-shadow: inset 4px 4px 10px rgba(0,0,0,0.3); }
-.btn-finish { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4), inset 2px 2px 6px rgba(255,255,255,0.5), inset -2px -2px 6px rgba(0,0,0,0.2); border: none; width: 100%; font-size: 19px; padding: 20px; }
-.btn-finish:active { transform: translateY(3px); box-shadow: inset 4px 4px 10px rgba(0,0,0,0.3); }
+.btn-start { background: linear-gradient(135deg, #10b981, #059669); color: white; box-shadow: 0 4px 10px rgba(16, 185, 129, 0.4), inset 2px 2px 6px rgba(255,255,255,0.5), inset -2px -2px 6px rgba(0,0,0,0.2); border: none; font-size: 16px; padding: 14px; width: 100%; }
+.btn-start:active { transform: translateY(2px); box-shadow: inset 4px 4px 10px rgba(0,0,0,0.3); }
+.btn-finish { background: linear-gradient(135deg, #3b82f6, #2563eb); color: white; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4), inset 2px 2px 6px rgba(255,255,255,0.5), inset -2px -2px 6px rgba(0,0,0,0.2); border: none; width: 100%; font-size: 15px; padding: 12px; }
+.btn-finish:active { transform: translateY(2px); box-shadow: inset 4px 4px 10px rgba(0,0,0,0.3); }
 
 .btn-stop { background: var(--btn-gradient); color: var(--text-muted); }
 .btn-cancel { background: var(--btn-gradient); color: var(--brand-danger); }
 
-@keyframes modern-alarm-glow {
-    0% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.2); border-color: var(--brand-danger); transform: scale(1); background-color: #fff1f2;}
-    50% { box-shadow: 0 0 30px rgba(239, 68, 68, 0.9), inset 0 0 20px rgba(239, 68, 68, 0.4); border-color: #fca5a5; transform: scale(1.04); background-color: #fee2e2;}
-    100% { box-shadow: 0 0 10px rgba(239, 68, 68, 0.4), inset 0 0 10px rgba(239, 68, 68, 0.2); border-color: var(--brand-danger); transform: scale(1); background-color: #fff1f2;}
-}
-
-.student-btn.alarm-blink { animation: modern-alarm-glow 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important; z-index: 20; background-image: none !important; border: 3px solid var(--brand-danger); }
-.student-btn.alarm-blink .gauge-bg, .student-btn.alarm-blink .level-tag, .student-btn.alarm-blink .status-badge, .student-btn.alarm-blink .timer-link-btn { display: none !important; } 
-.student-btn.alarm-blink .name-text { color: var(--brand-danger) !important; text-shadow: 0 2px 10px rgba(239, 68, 68, 0.3) !important; margin-top: -5px; margin-bottom: 15px; font-size: 32px; } 
-.student-btn.alarm-blink .alarm-alert-text { display: block; margin-top: -5px;} 
-
-.timer-box.done { animation: modern-alarm-glow 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important; background-image: none !important; border: 3px solid var(--brand-danger); }
+.timer-box.done { animation: modern-alarm-glow 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important; background-image: none !important; border: 2px solid var(--brand-danger); }
 .timer-box.done .info-panel { background: transparent !important; box-shadow: none !important; border: none !important;}
 .timer-box.done .student-name-display { color: var(--brand-danger) !important; text-shadow: 0 2px 10px rgba(239, 68, 68, 0.3) !important; font-weight: 900;}
 .timer-box.done .time-display { color: var(--brand-danger) !important; font-weight: 900; text-shadow: 0 0 10px rgba(239, 68, 68, 0.6); }
@@ -431,7 +394,7 @@ select { cursor: pointer; text-align: left; }
                 <img src="st flow.png" alt="ST Flow Logo" class="st-logo-img" onerror="this.style.display='none'">
                 <div style="display: flex; align-items: center;">
                     <span class="st-title">ST Flow</span>
-                    <span class="st-version">v5.6.1</span>
+                    <span class="st-version">v5.6.2</span>
                 </div>
             </div>
         </div>
@@ -714,11 +677,10 @@ select { cursor: pointer; text-align: left; }
 
 <script>
 // ==========================================
-// 🌟 1. UI 자동 숨김 로직 (Inactivity Timer 최적화)
+// 🌟 1. UI 1초 자동 숨김 로직
 // ==========================================
 let uiTimer = null;
 function resetUITimer() {
-    // 설정창 인풋(텍스트, 입력 등)에 포커스가 있을 때는 숨기지 않음
     if (document.activeElement && 
        (document.activeElement.tagName === 'INPUT' || 
         document.activeElement.tagName === 'TEXTAREA' || 
@@ -727,23 +689,21 @@ function resetUITimer() {
         return;
     }
     
-    // UI 다시 보이기
     document.body.classList.remove('ui-hidden');
     clearTimeout(uiTimer);
     
-    // 1초 후 숨김 처리
+    // 🌟 요청하신 대로 화면 조작 후 1초(1000ms) 뒤에 부드럽게 숨겨집니다.
     uiTimer = setTimeout(() => {
         document.body.classList.add('ui-hidden');
     }, 1000); 
 }
 
-// 터치, 클릭, 스크롤 같은 확실한 조작에만 초기화 반응 (민감한 hover 무시)
 window.addEventListener('touchstart', resetUITimer, {passive: true});
 window.addEventListener('mousedown', resetUITimer);
 window.addEventListener('click', resetUITimer);
 window.addEventListener('scroll', resetUITimer, true);
 
-resetUITimer(); // 초기화 실행
+resetUITimer();
 
 // ==========================================
 // 2. APP STATE, I18N & VARIABLES
@@ -862,9 +822,9 @@ window.goToTimer = function(name) {
             if(box) {
                 box.scrollIntoView({behavior: 'smooth', block: 'center'});
                 box.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.4s';
-                box.style.transform = 'scale(1.08)';
+                box.style.transform = 'scale(1.08) translateZ(0)';
                 box.style.boxShadow = '0 0 0 4px var(--accent), 0 15px 30px rgba(0,0,0,0.2)';
-                setTimeout(() => { box.style.transform = ''; box.style.boxShadow = ''; }, 1500);
+                setTimeout(() => { box.style.transform = 'translateZ(0)'; box.style.boxShadow = ''; }, 1500);
             }
         }, 300);
     }
