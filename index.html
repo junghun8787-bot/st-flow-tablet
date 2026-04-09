@@ -695,7 +695,7 @@ function resetUITimer() {
     // 🌟 요청하신 대로 화면 조작 후 1초(1000ms) 뒤에 부드럽게 숨겨집니다.
     uiTimer = setTimeout(() => {
         document.body.classList.add('ui-hidden');
-    }, 1000); 
+    }, 3000); 
 }
 
 window.addEventListener('touchstart', resetUITimer, {passive: true});
