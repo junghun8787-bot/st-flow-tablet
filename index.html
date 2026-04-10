@@ -835,6 +835,7 @@ function applyLanguage() {
     document.querySelectorAll(".editable-roster").forEach(el => { el.setAttribute("data-placeholder", t.placeholder); });
     updateDateUI(); generateStudents(); 
     for (let i = 0; i < DESK_COUNT; i++) updateBoxUI(i);
+
     renderLogs(); 
 }
 
@@ -1172,7 +1173,6 @@ function updateBoxUI(id) {
     const numDisplay = String(id+1).padStart(2, '0');
 
     box.innerHTML = `
-        <button class="box-roster-btn" onclick="switchView('roster'); playUISound('tab');">📋 명단</button>
         <div class="desk-id" style="opacity: ${isAssigned ? '1' : '0.4'}">${numDisplay}</div>
         <div class="${panelClass}" draggable="${isAssigned}" style="${panelStyle}">
             <div class="student-name-display">${nameDisplay}</div>
