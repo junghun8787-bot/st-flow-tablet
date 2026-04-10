@@ -9,9 +9,10 @@
 <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/index.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/scroll-behaviour.min.js"></script>
 <script>
-    // 터치 드래그 기능 활성화
+    // 터치 드래그 기능 활성화 (holdToDrag 추가로 터치 스크롤 방해 방지)
     MobileDragDrop.polyfill({
-        dragImageTranslateOverride: MobileDragDrop.scrollBehaviourDragImageTranslateOverride
+        dragImageTranslateOverride: MobileDragDrop.scrollBehaviourDragImageTranslateOverride,
+        holdToDrag: 250 // 0.25초 이상 꾹 눌러야 드래그 시작 (가볍게 스와이프하면 스크롤 됨)
     });
     window.addEventListener('touchmove', function() {}, {passive: false});
 </script>
@@ -21,7 +22,7 @@
    [ CSS 목차 ]
    1. FONTS & VARIABLES
    2. COLOR THEMES (30종)
-   3. RESET & BASE
+   3. RESET & BASE (스크롤바 추가)
    4. HEADER & LEFT NAV (미니멀 & 아이콘)
    5. UTILITIES & COMPONENTS
    6. VIEW: ROSTER (좌측 명단 / 우측 상하 분할)
@@ -122,6 +123,14 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 
 .main-wrapper { display: flex; flex-direction: column; height: 100%; position: relative;}
 .body-layout { display: flex; flex: 1; overflow: hidden; position: relative; min-height: 0; }
+
+/* Custom Scrollbar for Better Tablet UX */
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.03); border-radius: 8px; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.2); border-radius: 8px; border: 3px solid transparent; background-clip: content-box; }
+::-webkit-scrollbar-thumb:hover { background-color: rgba(0,0,0,0.4); }
+body[class*="theme-23"] ::-webkit-scrollbar-track, body[class*="theme-27"] ::-webkit-scrollbar-track, body[class*="theme-28"] ::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); }
+body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-webkit-scrollbar-thumb, body[class*="theme-28"] ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.3); }
 
 /* --------------------------------------------------------------------------
    4. HEADER & LEFT NAV (미니멀 사이즈 및 아이콘 모드 최적화)
@@ -243,8 +252,10 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .quick-btn:active { transform: scale(0.95) translateY(2px); box-shadow: var(--shadow-inner); }
 .student-btn.playing .q-start, .student-btn.alarm-blink .q-start { opacity: 0.4; cursor: not-allowed; }
 
-.alarm-alert-text { display: none; position: relative; z-index: 2; font-size: 14px; font-weight: 900; color: #991b1b; letter-spacing: 1px; text-shadow: none; margin-bottom: 2px; animation: blinker 0.6s linear infinite; }
-@keyframes blinker { 50% { opacity: 0.4; } }
+/* 🌟 알람 텍스트 CSS 추가 */
+.alarm-alert-text { display: none; position: relative; z-index: 2; font-size: 14px; font-weight: 900; color: #ef4444; letter-spacing: 1px; text-shadow: 0 0 5px rgba(255,255,255,0.8); margin-bottom: 2px; }
+.student-btn.alarm-blink .alarm-alert-text { display: block; animation: blinker 0.6s linear infinite; }
+@keyframes blinker { 50% { opacity: 0.2; } }
 
 .level-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-family: 'Montserrat', sans-serif; font-weight: 900; z-index: 4; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 1px 1px 3px rgba(255,255,255,0.4); transition: all 0.3s; }
 #grid-active .student-btn .level-tag { font-size: 11px; padding: 4px 12px; }
@@ -265,13 +276,28 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .btn-3d:hover, .btn-3d-sm:hover, .action-btn:hover, .student-btn:hover, .quick-btn:hover, .timer-link-btn:hover { transform: translateY(-3px); filter: brightness(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.9); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
 #grid-active .student-btn.attended:not(.playing):not(.alarm-blink) .status-badge { display: none !important; }
 
+/* 🌟 알람 이펙트 애니메이션 복구 및 강화 */
 @keyframes intense-neon-pulse {
     0% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); }
     50% { box-shadow: 0 0 30px rgba(59, 130, 246, 1), inset 0 0 20px rgba(59, 130, 246, 0.6); border-color: #3b82f6; background-color: rgba(59, 130, 246, 0.08) !important; }
     100% { box-shadow: 0 0 12px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.2); border-color: rgba(59, 130, 246, 0.5); }
 }
 
+@keyframes modern-alarm-glow {
+    0% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); border-color: rgba(239, 68, 68, 0.5); }
+    50% { box-shadow: 0 0 35px rgba(239, 68, 68, 1), inset 0 0 20px rgba(239, 68, 68, 0.4); border-color: #ef4444; background-color: rgba(239, 68, 68, 0.1) !important; }
+    100% { box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); border-color: rgba(239, 68, 68, 0.5); }
+}
+
+@keyframes alarm-pulse {
+    0% { box-shadow: 0 0 12px rgba(239, 68, 68, 0.6), inset 0 0 10px rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); }
+    50% { box-shadow: 0 0 30px rgba(239, 68, 68, 1), inset 0 0 20px rgba(239, 68, 68, 0.6); border-color: #ef4444; background-color: rgba(239, 68, 68, 0.15) !important; }
+    100% { box-shadow: 0 0 12px rgba(239, 68, 68, 0.6), inset 0 0 10px rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.5); }
+}
+
 .student-btn.playing { animation: intense-neon-pulse 1.5s infinite ease-in-out !important; border: 3px solid #3b82f6 !important; transform: scale(1.03) translateZ(0); z-index: 5; will-change: box-shadow; }
+/* 🌟 명단 버튼 깜빡임 추가 적용 */
+.student-btn.alarm-blink { animation: alarm-pulse 1.2s infinite ease-in-out !important; border: 3px solid #ef4444 !important; z-index: 10; transform: scale(1.05) translateZ(0); }
 #grid-active .student-btn.attended:not(.playing):not(.alarm-blink) { opacity: 0.95; transform: scale(0.98); filter: none; border: 2px dashed rgba(0,0,0,0.2); }
 
 /* --------------------------------------------------------------------------
@@ -313,7 +339,8 @@ body { font-family: 'Pretendard', sans-serif; background: var(--bg-main); color:
 .btn-stop { background: var(--btn-gradient); color: var(--text-muted); }
 .btn-cancel { background: var(--btn-gradient); color: var(--brand-danger); }
 
-.timer-box.done { animation: modern-alarm-glow 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important; background-image: none !important; border: 2px solid var(--brand-danger); }
+/* 🌟 타이머 박스 완료 알림 강화 */
+.timer-box.done { animation: modern-alarm-glow 1.2s infinite cubic-bezier(0.4, 0, 0.2, 1) !important; background-image: none !important; border: 3px solid var(--brand-danger) !important; }
 .timer-box.done .info-panel { background: transparent !important; box-shadow: none !important; border: none !important;}
 .timer-box.done .student-name-display { color: var(--brand-danger) !important; text-shadow: 0 2px 10px rgba(239, 68, 68, 0.3) !important; font-weight: 900;}
 .timer-box.done .time-display { color: var(--brand-danger) !important; font-weight: 900; text-shadow: 0 0 10px rgba(239, 68, 68, 0.6); }
@@ -353,7 +380,7 @@ select { cursor: pointer; text-align: left; }
 .admin-btn.primary { background: linear-gradient(135deg, var(--accent), #2563eb); color: #fff; border:none; box-shadow: 0 4px 10px rgba(59, 130, 246, 0.4), inset 2px 2px 5px rgba(255,255,255,0.4); }
 
 /* --------------------------------------------------------------------------
-   🌟 9. FOOTER (복구됨!)
+   🌟 9. FOOTER
 -------------------------------------------------------------------------- */
 .global-footer { text-align: center; padding: 40px 20px 30px 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 15px; font-weight: 600; letter-spacing: 1px; }
 .global-footer span { color: var(--accent); font-weight: 900; }
@@ -957,7 +984,7 @@ function generateStudents() {
             <div class="level-tag">${levelLabel}</div>
             <div class="gauge-bg"></div>
             <button class="timer-link-btn" onclick="event.stopPropagation(); goToTimer('${n}')">⏱️ 타이머</button>
-            <div class="alarm-alert-text"></div>
+            <div class="alarm-alert-text">${tLang.statusTimeUp}</div>
             <span class="name-text">${n}</span>
             <div class="quick-controls">
                 <button class="quick-btn q-start" onclick="event.stopPropagation(); quickStart('${n}')">${tLang.quickStart}</button>
@@ -1012,15 +1039,13 @@ function updateStudentStatus(name) {
     const btn = document.getElementById("btn-" + name); if (!btn) return;
     const lvl = studentLevels[name] || '';
     
+    // 알람 상태가 아닐 때 클래스 초기화
     btn.className = `student-btn level-${lvl}`; 
     
     let badge = btn.querySelector(".status-badge");
     if (!badge) { badge = document.createElement("div"); badge.className = "status-badge"; btn.appendChild(badge); }
     badge.style.background = ""; badge.style.color = "";
     
-    let alertText = btn.querySelector(".alarm-alert-text");
-    if (alertText) alertText.innerText = tLang.statusTimeUp;
-
     const gridUnassigned = document.getElementById("grid-unassigned");
     const gridActive = document.getElementById("grid-active");
     const gridFinished = document.getElementById("grid-finished");
