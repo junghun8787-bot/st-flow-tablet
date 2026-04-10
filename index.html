@@ -107,6 +107,9 @@ body.theme-28 { --bg-main: #064e3b; --bg-card: #022c22; --accent: #ef4444; --tex
 body.theme-29 { --bg-main: #f0f9ff; --bg-card: #e0f2fe; --accent: #38bdf8; --text-main: #0f172a; --btn-bg: #e0f2fe; --time-color: #0284c7; }
 body.theme-30 { --bg-main: #fdf4ff; --bg-card: #fae8ff; --accent: #8b5cf6; --text-main: #4a044e; --btn-bg: #fae8ff; --time-color: #8b5cf6; }
 
+/* --------------------------------------------------------------------------
+   3. RESET & BASE
+-------------------------------------------------------------------------- */
 * { box-sizing: border-box; }
 input, textarea, select, div[contenteditable] { font-family: 'Pretendard', sans-serif; }
 
@@ -145,7 +148,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .st-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 900; color: var(--text-main); line-height: 1; letter-spacing: -0.5px; }
 .st-version { background: var(--text-main); color: var(--bg-card); padding: 2px 5px; border-radius: 5px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; margin-left: 6px; letter-spacing: 0.5px;}
 
-/* 홈 버튼 (설정, 기록, 타이머에서 표시됨) */
+/* 홈 버튼 */
 .header-left { position: absolute; left: 10px; display: flex; align-items: center; transition: all 0.3s; opacity: 0; pointer-events: none; z-index: 101; }
 .header-left.visible { opacity: 1; pointer-events: auto; }
 
@@ -195,22 +198,23 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 /* --------------------------------------------------------------------------
    6. VIEW: ROSTER (좌측 명단 / 우측 상하 분할)
 -------------------------------------------------------------------------- */
-/* 태블릿 명단 레이아웃 수정: 1(좌측) : 2(우측 패널) */
-.roster-columns-wrapper { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; align-items: start; width: 100%; min-height: calc(100vh - 160px); }
+/* 📌 수정: 명단창 레이아웃이 내용물에 맞춰 유연하게 변하도록 높이 설정 제거 */
+.roster-columns-wrapper { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; align-items: start; width: 100%; margin-bottom: 20px;}
 
-/* 우측 패널을 세로로 분할 (위: 수업중 넓게 / 아래: 종료 좁게) */
-.roster-right-panel { display: flex; flex-direction: column; gap: 20px; height: 100%; }
-.roster-right-panel .active-col { flex: 1; display: flex; flex-direction: column;}
-.roster-right-panel .finished-col { flex-shrink: 0; min-height: 150px; }
+.roster-right-panel { display: flex; flex-direction: column; gap: 20px; }
+.roster-right-panel .active-col { display: flex; flex-direction: column; min-height: 250px; }
+/* 📌 수정: 수업 완료 창 최소 높이 대폭 축소 */
+.roster-right-panel .finished-col { min-height: 120px; }
 
-.roster-column { background: var(--bg-main); background-image: var(--box-gradient); border: 2px solid rgba(255,255,255,0.5); border-radius: 20px; padding: 15px; box-shadow: var(--shadow-pop); height: 100%; }
+/* 📌 수정: 박스들이 내용물에 맞춰 높이가 자동 조절되도록 height: auto 적용 */
+.roster-column { background: var(--bg-main); background-image: var(--box-gradient); border: 2px solid rgba(255,255,255,0.5); border-radius: 20px; padding: 15px 15px 25px 15px; box-shadow: var(--shadow-pop); height: auto; min-height: 150px; transition: all 0.3s ease; }
 .roster-column.active-col { border: 3px solid var(--accent); box-shadow: var(--shadow-pop), 0 0 25px rgba(59, 130, 246, 0.15); background-image: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(59, 130, 246, 0.05)); }
 
 .group-title { font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 12px 0; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
 
 #grid-unassigned { display: grid; gap: 10px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(3, 1fr); }
-/* 우측 수업 중 컨테이너는 남은 공간을 꽉 채움 */
-#grid-active { display: grid; gap: 15px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); flex: 1; overflow-y: auto;}
+/* 📌 수정: 수업 중 그리드 역시 오버플로우(스크롤)를 없애고 내용물에 따라 늘어나게 변경 */
+#grid-active { display: grid; gap: 15px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); height: auto; }
 #grid-finished { display: grid; gap: 10px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
 
 .student-btn { font-weight: 900; cursor: grab; overflow: hidden; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; font-family: 'Pretendard', sans-serif; touch-action: none; background: var(--btn-gradient); border: none; box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; transform: translateZ(0); }
@@ -221,7 +225,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 #grid-unassigned .student-btn .level-tag { font-size: 9px; padding: 2px 8px; border-radius: 0 0 6px 6px;}
 #grid-unassigned .student-btn .status-badge { display: none !important; } 
 
-/* 📌 수정: 수업 중 카드 높이 증가 (버튼 간섭 방지) */
+/* 📌 수정: 이름과 버튼이 겹치지 않게 '수업 중' 카드 높이를 135px로 키움 */
 #grid-active .student-btn { height: 135px; font-size: 32px; border-radius: 16px;}
 #grid-active .student-btn .name-text { margin-top: 10px; margin-bottom: 25px; } 
 
@@ -234,7 +238,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .gauge-bg { position: absolute; top: 0; left: 0; height: 100%; width: 0%; z-index: -1; transition: width 0.5s ease; border-radius: 12px 0 0 12px; }
 .name-text { position: relative; z-index: 2; color: var(--custom-name-color); text-shadow: 1px 1px 2px rgba(255,255,255,0.6), -1px -1px 2px rgba(0,0,0,0.05), var(--custom-name-shadow); letter-spacing: 1px; transition: all 0.3s; }
 
-/* 태블릿 카드 취소 버튼 추가 */
+/* 📌 추가: 태블릿 명단 카드 취소 버튼 (좌측 상단) */
 .card-cancel-btn { position: absolute; top: 6px; left: 6px; width: 26px; height: 26px; border-radius: 50%; background: var(--bg-main); color: var(--brand-danger); border: 1px solid rgba(239, 68, 68, 0.3); display: none; align-items: center; justify-content: center; font-weight: 900; font-size: 12px; cursor: pointer; z-index: 10; box-shadow: var(--shadow-btn); transition: 0.2s; font-family: 'Montserrat', sans-serif;}
 .card-cancel-btn:hover { background: var(--brand-danger); color: white; transform: scale(1.1); }
 #grid-active .student-btn.attended .card-cancel-btn { display: flex; }
@@ -255,7 +259,6 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .level-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-family: 'Montserrat', sans-serif; font-weight: 900; z-index: 4; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 1px 1px 3px rgba(255,255,255,0.4); transition: all 0.3s; }
 #grid-active .student-btn .level-tag { font-size: 11px; padding: 4px 12px; }
 
-/* 레벨 색상 테마 강화 */
 .level-PRE { border-color: var(--selena-yellow); background: linear-gradient(135deg, rgba(255, 215, 0, 0.45) 0%, rgba(255, 215, 0, 0.1) 100%); } .level-PRE .gauge-bg { background: rgba(255, 215, 0, 0.8); } .level-PRE .level-tag { background: var(--selena-yellow); color: #000; } 
 .level-BASIC { border-color: var(--selena-pink); background: linear-gradient(135deg, rgba(255, 0, 163, 0.35) 0%, rgba(255, 0, 163, 0.05) 100%); } .level-BASIC .gauge-bg { background: rgba(255, 0, 163, 0.7); } .level-BASIC .level-tag { background: var(--selena-pink); color: #fff; }
 .level-INTER { border-color: var(--selena-orange); background: linear-gradient(135deg, rgba(240, 112, 31, 0.35) 0%, rgba(240, 112, 31, 0.05) 100%); } .level-INTER .gauge-bg { background: rgba(240, 112, 31, 0.7); } .level-INTER .level-tag { background: var(--selena-orange); color: #fff; }
@@ -270,7 +273,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .student-btn.finished .status-badge { background: transparent; color: var(--text-muted); box-shadow: none; border: 1px solid var(--border); }
 .student-btn.drag-over { transform: scale(1.05); box-shadow: var(--shadow-pop) !important; border: 3px solid var(--accent); z-index: 10; } 
 
-.btn-3d:hover, .btn-3d-sm:hover, .action-btn:hover, .student-btn:hover, .quick-btn:hover, .box-roster-btn:hover { transform: translateY(-3px); filter: brightness(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.9); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
+.btn-3d:hover, .btn-3d-sm:hover, .action-btn:hover, .student-btn:hover, .quick-btn:hover { transform: translateY(-3px); filter: brightness(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.9); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
 #grid-active .student-btn.attended:not(.playing):not(.alarm-blink) .status-badge { display: none !important; }
 
 @keyframes intense-neon-pulse {
@@ -391,7 +394,7 @@ select { cursor: pointer; text-align: left; }
 /* --------------------------------------------------------------------------
    10. FOOTER
 -------------------------------------------------------------------------- */
-.global-footer { text-align: center; padding: 20px 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 14px; font-weight: 600; letter-spacing: 1px; }
+.global-footer { text-align: center; padding: 20px 20px 30px 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 14px; font-weight: 600; letter-spacing: 1px; }
 .global-footer span { color: var(--accent); font-weight: 900; }
 </style>
 </head>
@@ -494,7 +497,7 @@ select { cursor: pointer; text-align: left; }
                     </div>
                 </div>
                 <div style="display: flex; justify-content: flex-end; gap: 15px;">
-                    <button class="admin-btn btn-3d" style="background: linear-gradient(135deg, #f59e0b, #b45309); color:#fff; width: auto; padding: 18px 30px; font-size: 18px;" onclick="askSoftReset();" data-i18n="softReset">🔄 타이머 및 로그 초기화</button>
+                    <button class="admin-btn btn-3d" style="background: linear-gradient(135deg, #f59e0b, #b45309); color:#fff; width: auto; padding: 18px 30px; font-size: 18px;" onclick="askSoftReset(); playUISound('click');" data-i18n="softReset">🔄 타이머 및 로그 초기화</button>
                     <button class="admin-btn btn-3d primary" style="width: auto; padding: 18px 50px; font-size: 18px;" onclick="saveLogAction(); playUISound('click');" data-i18n="exportLog">💾 수업 로그 내보내기 (.txt)</button>
                 </div>
             </section>
@@ -1253,7 +1256,7 @@ function stopTimer(id) {
     } 
 }
 
-function clearTime(id) { playUISound('click'); timers[id].remainingTime = 0; timers[id].totalTime = 0; timers[id].overTime = 0; timers[id].isOver = false; stopTimer(id); updateBoxUI(id); updateGauge(timers[id].student, 0, 1); saveToStorage(); }
+function clearTime(id) { playUISound('cancel'); timers[id].remainingTime = 0; timers[id].totalTime = 0; timers[id].overTime = 0; timers[id].isOver = false; stopTimer(id); updateBoxUI(id); updateGauge(timers[id].student, 0, 1); saveToStorage(); }
 function cancelSession(id) { if(timers[id].student === "(empty)") return; playUISound('cancel'); const sn = timers[id].student; attendanceMap.delete(sn); resetTimerData(id, true); }
 function finishSession(id) { if(timers[id].student === "(empty)") return; playUISound('finish'); const sn = timers[id].student; finishedSet.add(sn); attendanceMap.delete(sn); logEvent(sn, 'finish', 'right', timers[id].overTime); resetTimerData(id, true); }
 function resetTimerData(id, resetUI) { stopTimer(id); const sn = timers[id].student; timers[id] = { student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }; updateBoxUI(id); if (resetUI) updateStudentStatus(sn); saveToStorage(); }
