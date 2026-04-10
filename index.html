@@ -403,11 +403,6 @@ select { cursor: pointer; text-align: left; }
 <div class="main-wrapper">
     
     <header class="global-header" id="mainHeader">
-        <div class="header-left" id="homeButtonContainer">
-            <button class="btn-3d-sm" style="padding: 8px 16px; font-size: 14px; font-weight: 800; display: flex; align-items: center; gap: 6px; cursor: pointer; border-radius: 12px;" onclick="switchView('roster');">
-                <span style="font-size: 18px;">🏠</span> <span data-i18n="nav1">명단</span>
-            </button>
-        </div>
 
         <div class="header-center">
             <h1 class="class-main-title" id="displayClassName">Maple Classroom</h1>
@@ -1175,7 +1170,7 @@ function updateBoxUI(id) {
     box.innerHTML = `
         <div class="desk-id" style="opacity: ${isAssigned ? '1' : '0.4'}">${numDisplay}</div>
         <div class="${panelClass}" draggable="${isAssigned}" style="${panelStyle}">
-            <div class="student-name-display">${nameDisplay}</div>
+            <div class="student-name-display" ${isAssigned ? `style="cursor:pointer;" onclick="playUISound('tab'); switchView('roster');"` : ''}>${nameDisplay}</div>
             <div class="time-display" id="display-${id}" style="visibility: ${isAssigned ? 'visible' : 'hidden'}">${t.isOver ? '+'+formatTime(t.overTime) : formatTime(t.remainingTime)}</div>
         </div>
         
