@@ -28,7 +28,7 @@
    6. VIEW: ROSTER (좌측 명단 / 우측 상하 분할)
    7. VIEW: TIMER
    8. VIEW: LOG & SETTINGS
-   9. VIEW: GAME (사다리)
+   9. VIEW: GAME (미니게임 - 사다리, 룰렛)
    10. FOOTER
 ========================================================================== */
 
@@ -148,7 +148,6 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .st-title { font-family: 'Montserrat', sans-serif; font-size: 16px; font-weight: 900; color: var(--text-main); line-height: 1; letter-spacing: -0.5px; }
 .st-version { background: var(--text-main); color: var(--bg-card); padding: 2px 5px; border-radius: 5px; font-family: 'Montserrat', sans-serif; font-size: 10px; font-weight: 800; margin-left: 6px; letter-spacing: 0.5px;}
 
-/* 홈 버튼 */
 .header-left { position: absolute; left: 10px; display: flex; align-items: center; transition: all 0.3s; opacity: 0; pointer-events: none; z-index: 101; }
 .header-left.visible { opacity: 1; pointer-events: auto; }
 
@@ -198,22 +197,18 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 /* --------------------------------------------------------------------------
    6. VIEW: ROSTER (좌측 명단 / 우측 상하 분할)
 -------------------------------------------------------------------------- */
-/* 📌 수정: 명단창 레이아웃이 내용물에 맞춰 유연하게 변하도록 높이 설정 제거 */
 .roster-columns-wrapper { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; align-items: start; width: 100%; margin-bottom: 20px;}
 
 .roster-right-panel { display: flex; flex-direction: column; gap: 20px; }
 .roster-right-panel .active-col { display: flex; flex-direction: column; min-height: 250px; }
-/* 📌 수정: 수업 완료 창 최소 높이 대폭 축소 */
 .roster-right-panel .finished-col { min-height: 120px; }
 
-/* 📌 수정: 박스들이 내용물에 맞춰 높이가 자동 조절되도록 height: auto 적용 */
 .roster-column { background: var(--bg-main); background-image: var(--box-gradient); border: 2px solid rgba(255,255,255,0.5); border-radius: 20px; padding: 15px 15px 25px 15px; box-shadow: var(--shadow-pop); height: auto; min-height: 150px; transition: all 0.3s ease; }
 .roster-column.active-col { border: 3px solid var(--accent); box-shadow: var(--shadow-pop), 0 0 25px rgba(59, 130, 246, 0.15); background-image: linear-gradient(145deg, rgba(255,255,255,0.9), rgba(59, 130, 246, 0.05)); }
 
 .group-title { font-family: 'Montserrat', 'Pretendard', sans-serif; font-size: 18px; font-weight: 900; color: var(--text-main); margin: 0 0 12px 0; padding-bottom: 10px; border-bottom: 2px solid var(--border); display: flex; align-items: center; gap: 8px; }
 
 #grid-unassigned { display: grid; gap: 10px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(3, 1fr); }
-/* 📌 수정: 수업 중 그리드 역시 오버플로우(스크롤)를 없애고 내용물에 따라 늘어나게 변경 */
 #grid-active { display: grid; gap: 15px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); height: auto; }
 #grid-finished { display: grid; gap: 10px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
 
@@ -225,7 +220,6 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 #grid-unassigned .student-btn .level-tag { font-size: 9px; padding: 2px 8px; border-radius: 0 0 6px 6px;}
 #grid-unassigned .student-btn .status-badge { display: none !important; } 
 
-/* 📌 수정: 이름과 버튼이 겹치지 않게 '수업 중' 카드 높이를 135px로 키움 */
 #grid-active .student-btn { height: 135px; font-size: 32px; border-radius: 16px;}
 #grid-active .student-btn .name-text { margin-top: 10px; margin-bottom: 25px; } 
 
@@ -238,7 +232,6 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .gauge-bg { position: absolute; top: 0; left: 0; height: 100%; width: 0%; z-index: -1; transition: width 0.5s ease; border-radius: 12px 0 0 12px; }
 .name-text { position: relative; z-index: 2; color: var(--custom-name-color); text-shadow: 1px 1px 2px rgba(255,255,255,0.6), -1px -1px 2px rgba(0,0,0,0.05), var(--custom-name-shadow); letter-spacing: 1px; transition: all 0.3s; }
 
-/* 📌 추가: 태블릿 명단 카드 취소 버튼 (좌측 상단) */
 .card-cancel-btn { position: absolute; top: 6px; left: 6px; width: 26px; height: 26px; border-radius: 50%; background: var(--bg-main); color: var(--brand-danger); border: 1px solid rgba(239, 68, 68, 0.3); display: none; align-items: center; justify-content: center; font-weight: 900; font-size: 12px; cursor: pointer; z-index: 10; box-shadow: var(--shadow-btn); transition: 0.2s; font-family: 'Montserrat', sans-serif;}
 .card-cancel-btn:hover { background: var(--brand-danger); color: white; transform: scale(1.1); }
 #grid-active .student-btn.attended .card-cancel-btn { display: flex; }
@@ -291,7 +284,6 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .student-btn.alarm-blink { animation: alarm-pulse 1.2s infinite ease-in-out !important; border: 3px solid #ef4444 !important; z-index: 10; }
 #grid-active .student-btn.attended:not(.playing):not(.alarm-blink) { opacity: 0.95; filter: none; border: 2px dashed rgba(0,0,0,0.2); }
 
-/* 게스트 추가 기능 디자인 */
 .guest-input-container { display: flex; gap: 8px; margin-bottom: 12px; }
 .guest-input { flex: 1; padding: 10px 12px; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow-inner); font-family: 'Pretendard', sans-serif; font-weight: 700; background: var(--bg-card); color: var(--text-main); outline: none; transition: 0.3s; font-size: 14px;}
 .guest-input:focus { border-color: var(--accent); }
@@ -347,7 +339,6 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .timer-box.done .time-display { color: var(--brand-danger) !important; font-weight: 900; text-shadow: 0 0 10px rgba(239, 68, 68, 0.6); }
 .timer-box.done .desk-id { color: #000000 !important; font-weight: 900;}
 
-/* 타이머 내 명단가기 버튼 */
 .box-roster-btn { position: absolute; top: 10px; right: 10px; font-size: 11px; font-weight: 800; padding: 4px 8px; border-radius: 8px; background: var(--bg-main); color: var(--text-muted); border: 1px solid var(--border); box-shadow: var(--shadow-btn); cursor: pointer; transition: 0.2s; z-index: 10; font-family: 'Pretendard', sans-serif;}
 .box-roster-btn:hover { color: var(--accent); border-color: var(--accent); transform: translateY(-2px); }
 .box-roster-btn:active { transform: scale(0.95); box-shadow: var(--shadow-inner); }
@@ -389,7 +380,8 @@ select { cursor: pointer; text-align: left; }
    9. VIEW: GAME (미니게임)
 -------------------------------------------------------------------------- */
 .ladder-canvas-container { position:relative; width: 100%; max-width: 900px; height: 500px; background: var(--bg-card); border: 2px solid var(--border); border-radius: 20px; overflow:hidden; box-shadow: var(--shadow-inner); margin: 0 auto; }
-#ladderResult { margin-top: 25px; font-size: 28px; font-weight: 900; color: var(--accent); min-height: 40px; text-align: center; font-family: 'Pretendard', sans-serif; animation: fadeIn 0.5s ease;}
+#gameResult { margin-top: 25px; font-size: 28px; font-weight: 900; color: var(--accent); min-height: 40px; text-align: center; font-family: 'Pretendard', sans-serif; animation: fadeIn 0.5s ease;}
+.active-game-tab { background: var(--accent) !important; color: #fff !important; box-shadow: var(--shadow-inner) !important; border-color: transparent !important; }
 
 /* --------------------------------------------------------------------------
    10. FOOTER
@@ -706,20 +698,40 @@ select { cursor: pointer; text-align: left; }
 
             <section id="view-game" class="view-section">
                 <div class="settings-card" style="align-items: center; max-width: 1000px; margin: 0 auto;">
-                    <h3><span class="icon-accent">🎲</span> 행운의 사다리 타기 (수업 중 학생 대상)</h3>
+                    <h3><span class="icon-accent">🎲</span> 미니 게임 (수업 중 학생 대상)</h3>
+                    
+                    <div style="display:flex; gap:10px; margin-bottom:20px; justify-content: center; width: 100%;">
+                        <button class="btn-3d active-game-tab" id="tabLadder" onclick="switchGameMode('ladder')" style="padding:12px 25px; font-weight:800; border-radius:12px; font-size: 16px;">🪜 사다리 타기</button>
+                        <button class="btn-3d" id="tabRoulette" onclick="switchGameMode('roulette')" style="padding:12px 25px; font-weight:800; border-radius:12px; font-size: 16px;">🎡 룰렛 돌리기</button>
+                    </div>
+
                     <p style="color: var(--text-muted); font-weight: 600; margin-bottom: 25px;">현재 타이머에 배정된 학생들을 대상으로 랜덤 이벤트를 진행합니다.</p>
                     
                     <div style="display:flex; gap:15px; margin-bottom:30px; justify-content: center; width: 100%; align-items: center;">
                         <button class="btn-3d-sm" id="btnBgmToggle" onclick="toggleBGM()" style="padding: 14px 20px; font-weight: 800; font-size: 15px;">🔊 BGM ON</button>
-                        <button class="admin-btn btn-3d primary" onclick="setupLadder()" style="width:auto; padding:16px 30px; font-size: 16px; margin: 0;">🔄 사다리 생성하기</button>
-                        <button class="admin-btn btn-3d" id="btnStartLadder" onclick="startLadderAnimation()" style="width:auto; padding:16px 30px; font-size: 16px; background:var(--brand-success); color:white; margin: 0; display: none;">🚀 사다리 타기 시작!</button>
                     </div>
                     
-                    <div class="ladder-canvas-container">
-                        <canvas id="ladderCanvas" width="900" height="500"></canvas>
+                    <div id="ladder-game-area" style="width:100%;">
+                        <div style="display:flex; gap:15px; margin-bottom:15px; justify-content: center; width: 100%;">
+                            <button class="admin-btn btn-3d primary" onclick="setupLadder()" style="width:auto; padding:16px 30px; font-size: 16px; margin: 0;">🔄 사다리 생성하기</button>
+                            <button class="admin-btn btn-3d" id="btnStartLadder" onclick="startLadderAnimation()" style="width:auto; padding:16px 30px; font-size: 16px; background:var(--brand-success); color:white; margin: 0; display: none;">🚀 사다리 타기 시작!</button>
+                        </div>
+                        <div class="ladder-canvas-container">
+                            <canvas id="ladderCanvas" width="900" height="500"></canvas>
+                        </div>
+                    </div>
+
+                    <div id="roulette-game-area" style="width:100%; display:none;">
+                        <div style="display:flex; gap:15px; margin-bottom:15px; justify-content: center; width: 100%;">
+                            <button class="admin-btn btn-3d primary" onclick="setupRoulette()" style="width:auto; padding:16px 30px; font-size: 16px; margin: 0;">🔄 룰렛 생성하기</button>
+                            <button class="admin-btn btn-3d" id="btnStartRoulette" onclick="startRouletteAnimation()" style="width:auto; padding:16px 30px; font-size: 16px; background:var(--brand-success); color:white; margin: 0; display: none;">🎡 룰렛 돌리기 시작!</button>
+                        </div>
+                        <div class="ladder-canvas-container" style="display:flex; justify-content:center; align-items:center; background:transparent; border:none; box-shadow:none;">
+                            <canvas id="rouletteCanvas" width="500" height="500" style="filter: drop-shadow(0 10px 15px rgba(0,0,0,0.1));"></canvas>
+                        </div>
                     </div>
                     
-                    <div id="ladderResult"></div>
+                    <div id="gameResult"></div>
                 </div>
             </section>
             
@@ -763,6 +775,12 @@ let uiVolume = 0.5;
 let currentTheme = "1";
 
 let currentLang = 'ko'; 
+
+// 📌 미니게임 모드 상태 (태블릿용 통합 관리)
+let isRouletteMode = false;
+let rouletteAngle = 0;
+let rouletteSpinning = false;
+let roulettePlayers = [];
 
 const i18n = {
     en: {
@@ -847,7 +865,30 @@ function switchView(view) {
         else homeBtn.classList.add('visible');
     }
     
-    if(view === 'game' && ladderPlayers.length === 0) setupLadder(); 
+    if(view === 'game') { 
+        if(isRouletteMode && roulettePlayers.length === 0) setupRoulette(); 
+        else if(!isRouletteMode && ladderPlayers.length === 0) setupLadder();
+    }
+}
+
+function switchGameMode(mode) {
+    playUISound('click');
+    document.getElementById('gameResult').innerHTML = "";
+    if(mode === 'ladder') {
+        isRouletteMode = false;
+        document.getElementById('ladder-game-area').style.display = 'block';
+        document.getElementById('roulette-game-area').style.display = 'none';
+        document.getElementById('tabLadder').classList.add('active-game-tab');
+        document.getElementById('tabRoulette').classList.remove('active-game-tab');
+        setupLadder();
+    } else {
+        isRouletteMode = true;
+        document.getElementById('ladder-game-area').style.display = 'none';
+        document.getElementById('roulette-game-area').style.display = 'block';
+        document.getElementById('tabRoulette').classList.add('active-game-tab');
+        document.getElementById('tabLadder').classList.remove('active-game-tab');
+        setupRoulette();
+    }
 }
 
 window.goToTimer = function(name) {
@@ -1403,14 +1444,14 @@ function askFactoryReset() {
 }
 
 // ==========================================
-// 9. LADDER GAME LOGIC (Canvas Animation & BGM)
+// 9. LADDER & ROULETTE GAME LOGIC
 // ==========================================
 let ladderPlayers = [];
 let ladderRungs = [];
 let targetWinnerIndex = -1;
 let animReq;
 let isResultRevealed = false; 
-let isLadderAnimating = false;
+let isGameAnimating = false; // 공통 애니메이션 상태
 
 const ladderColors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#84cc16', '#6366f1', '#14b8a6', '#d946ef', '#eab308', '#0ea5e9', '#f43f5e'];
 
@@ -1429,7 +1470,7 @@ function toggleBGM() {
     }
     playUISound('click');
 
-    if (isLadderAnimating) {
+    if (isGameAnimating) {
         if (isBgmOn) startLadderBGM();
         else stopLadderBGM();
     }
@@ -1461,6 +1502,9 @@ function stopLadderBGM() {
     }
 }
 
+// ----------------------------------
+// LADDER LOGIC
+// ----------------------------------
 function setupLadder() {
     playUISound('click');
     
@@ -1469,13 +1513,13 @@ function setupLadder() {
         animReq = null;
     }
     stopLadderBGM();
-    isLadderAnimating = false;
+    isGameAnimating = false;
 
     const canvas = document.getElementById('ladderCanvas');
     const ctx = canvas.getContext('2d');
     
     ladderPlayers = timers.filter(t => t.student !== "(empty)").map(t => t.student);
-    document.getElementById('ladderResult').innerHTML = "";
+    document.getElementById('gameResult').innerHTML = "";
     
     const btnStart = document.getElementById('btnStartLadder');
     btnStart.innerText = "🚀 사다리 타기 시작!";
@@ -1599,9 +1643,9 @@ function startLadderAnimation() {
     startLadderBGM(); 
     
     document.getElementById('btnStartLadder').style.display = 'none';
-    document.getElementById('ladderResult').innerHTML = "결과 확인 중...👀";
+    document.getElementById('gameResult').innerHTML = "결과 확인 중...👀";
     isResultRevealed = true; 
-    isLadderAnimating = true;
+    isGameAnimating = true;
     
     if(animReq) cancelAnimationFrame(animReq);
     
@@ -1700,7 +1744,7 @@ function startLadderAnimation() {
         if(progress < maxLen) {
             animReq = requestAnimationFrame(drawFrame);
         } else {
-            isLadderAnimating = false; 
+            isGameAnimating = false; 
             stopLadderBGM(); 
             
             let winnerPathObj = paths.find(p => p.finalCol === targetWinnerIndex);
@@ -1724,7 +1768,7 @@ function startLadderAnimation() {
             }
             
             playUISound('finish');
-            document.getElementById('ladderResult').innerHTML = `🎉 축하합니다! <span style="color:var(--brand-danger)">${realWinnerName}</span> 학생이 당첨되었습니다! 🎉`;
+            document.getElementById('gameResult').innerHTML = `🎉 축하합니다! <span style="color:var(--brand-danger)">${realWinnerName}</span> 학생이 당첨되었습니다! 🎉`;
             
             if(!isReplay) {
                 logEvent(realWinnerName, 'game', 'right');
@@ -1739,6 +1783,156 @@ function startLadderAnimation() {
     
     animReq = requestAnimationFrame(drawFrame);
 }
+
+// ----------------------------------
+// ROULETTE LOGIC
+// ----------------------------------
+function setupRoulette() {
+    playUISound('click');
+    if(animReq) { cancelAnimationFrame(animReq); animReq = null; }
+    stopLadderBGM();
+    rouletteSpinning = false;
+    isGameAnimating = false;
+    
+    roulettePlayers = timers.filter(t => t.student !== "(empty)").map(t => t.student);
+    document.getElementById('gameResult').innerHTML = "";
+    
+    const btnStart = document.getElementById('btnStartRoulette');
+    btnStart.innerText = "🎡 룰렛 돌리기 시작!";
+    btnStart.onclick = startRouletteAnimation;
+    btnStart.style.display = 'none';
+
+    const canvas = document.getElementById('rouletteCanvas');
+    const ctx = canvas.getContext('2d');
+    
+    if(roulettePlayers.length < 2) {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--text-muted');
+        ctx.font = "bold 20px Pretendard";
+        ctx.textAlign = "center";
+        ctx.fillText("최소 2명 이상의 수업 중인 학생이 필요합니다.", canvas.width/2, canvas.height/2);
+        return;
+    }
+
+    rouletteAngle = 0;
+    drawRoulette(rouletteAngle);
+    btnStart.style.display = 'block';
+}
+
+function drawRoulette(angle) {
+    const canvas = document.getElementById('rouletteCanvas');
+    const ctx = canvas.getContext('2d');
+    const cw = canvas.width;
+    const ch = canvas.height;
+    const cx = cw / 2;
+    const cy = ch / 2;
+    const radius = Math.min(cw, ch) / 2 - 25;
+
+    ctx.clearRect(0, 0, cw, ch);
+
+    const numSlices = roulettePlayers.length;
+    const sliceAngle = (2 * Math.PI) / numSlices;
+
+    for(let i = 0; i < numSlices; i++) {
+        const startAngle = angle + i * sliceAngle;
+        const endAngle = startAngle + sliceAngle;
+
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, radius, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = ladderColors[i % ladderColors.length];
+        ctx.fill();
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = "#ffffff";
+        ctx.stroke();
+
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(startAngle + sliceAngle / 2);
+        ctx.textAlign = "right";
+        ctx.textBaseline = "middle";
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 24px Pretendard";
+        ctx.shadowColor = "rgba(0,0,0,0.4)";
+        ctx.shadowBlur = 4;
+        ctx.fillText(roulettePlayers[i], radius - 20, 0);
+        ctx.restore();
+    }
+
+    ctx.beginPath();
+    ctx.arc(cx, cy, 35, 0, 2 * Math.PI);
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--bg-card');
+    ctx.fill();
+    ctx.lineWidth = 4;
+    ctx.strokeStyle = getComputedStyle(document.body).getPropertyValue('--accent');
+    ctx.stroke();
+
+    ctx.beginPath();
+    ctx.moveTo(cx - 18, cy - radius - 15);
+    ctx.lineTo(cx + 18, cy - radius - 15);
+    ctx.lineTo(cx, cy - radius + 20);
+    ctx.closePath();
+    ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--brand-danger');
+    ctx.fill();
+    ctx.strokeStyle = "#fff";
+    ctx.lineWidth = 3;
+    ctx.stroke();
+}
+
+function startRouletteAnimation() {
+    if(rouletteSpinning) return;
+    playUISound('start');
+    startLadderBGM(); 
+    
+    document.getElementById('btnStartRoulette').style.display = 'none';
+    document.getElementById('gameResult').innerHTML = "결과 확인 중...👀";
+    rouletteSpinning = true;
+    isGameAnimating = true;
+    
+    if(animReq) cancelAnimationFrame(animReq);
+
+    let speed = Math.random() * 0.2 + 0.4; 
+    const friction = 0.993; 
+    
+    function spin() {
+        rouletteAngle += speed;
+        drawRoulette(rouletteAngle);
+        speed *= friction;
+
+        if(speed > 0.002) {
+            animReq = requestAnimationFrame(spin);
+        } else {
+            rouletteSpinning = false;
+            isGameAnimating = false;
+            stopLadderBGM();
+            
+            const numSlices = roulettePlayers.length;
+            const sliceAngle = (2 * Math.PI) / numSlices;
+            
+            let offsetAngle = ((3 * Math.PI / 2) - rouletteAngle) % (2 * Math.PI);
+            if(offsetAngle < 0) offsetAngle += 2 * Math.PI;
+            
+            const winningIndex = Math.floor(offsetAngle / sliceAngle);
+            const winnerName = roulettePlayers[winningIndex];
+
+            playUISound('finish');
+            document.getElementById('gameResult').innerHTML = `🎉 축하합니다! <span style="color:var(--brand-danger)">${winnerName}</span> 학생이 당첨되었습니다! 🎉`;
+            
+            let isReplay = document.getElementById('btnStartRoulette').innerText === "🎬 다시 돌리기";
+            if(!isReplay) {
+                logEvent(winnerName, 'game', 'right');
+            }
+
+            const btnStart = document.getElementById('btnStartRoulette');
+            btnStart.innerText = "🎬 다시 돌리기";
+            btnStart.onclick = startRouletteAnimation;
+            btnStart.style.display = 'block';
+        }
+    }
+    spin();
+}
+
 </script>
 </body>
 </html>
