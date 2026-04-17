@@ -30,12 +30,13 @@ let currentTheme = "1";
 
 let currentLang = 'ko'; 
 
-// 📌 미니게임 모드 상태 (태블릿용 통합 관리)
+// 📌 미니게임 모드 상태
 let isRouletteMode = false;
 let rouletteAngle = 0;
 let rouletteSpinning = false;
 let roulettePlayers = [];
 
+// ⭐ 아이콘 제거됨
 const i18n = {
     en: {
         nav1: "STUDENTS", nav2: "TIMER", nav3: "LOG", nav4: "SETTING", nav5: "MINI GAME",
@@ -49,9 +50,9 @@ const i18n = {
         sysCtrl: "SYSTEM CONTROL", backupCreate: "📦 CREATE BACKUP (.json)", backupRestore: "📂 RESTORE BACKUP (.json)",
         softReset: "🔄 Soft Reset (Timers & Logs)", hardReset: "⚠️ Hard Reset (Factory Reset)",
         btnStart: "START", btnStop: "STOP", btnCancel: "CANCEL", btnFinish: "FINISH LESSON", btnClear: "CLR",
-        statusAssign: "✔ Assigned", statusPlaying: "▶️ Playing", statusTimeUp: "🔔 Time Up", statusFinish: "🏁 Finished",
+        statusAssign: "✔ Assigned", statusPlaying: "Playing", statusTimeUp: "🔔 Time Up", statusFinish: "Finished",
         logStartWord: "Started", logFinishWord: "Finished", logCancelWord: "Canceled",
-        quickStart: "▶️ START", quickFinish: "🏁 FINISH",
+        quickStart: "START", quickFinish: "FINISH",
         grpWait: "⏳ Students List", grpActive: "▶️ In Class", grpFinish: "🏁 FINISHED",
         noRecords: "No Records", langText: "🌐 Language / 언어",
         days: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
@@ -72,9 +73,9 @@ const i18n = {
         sysCtrl: "시스템 백업 및 초기화", backupCreate: "📦 백업 파일 저장 (.json)", backupRestore: "📂 백업 파일 불러오기 (.json)",
         softReset: "🔄 타이머 및 로그 초기화", hardReset: "⚠️ 모든 설정 공장 초기화",
         btnStart: "시작", btnStop: "정지", btnCancel: "취소", btnFinish: "수업 완료", btnClear: "초기화",
-        statusAssign: "✔ 자리배정", statusPlaying: "▶️ 수업 중", statusTimeUp: "🔔 시간 종료", statusFinish: "🏁 완료",
+        statusAssign: "✔ 자리배정", statusPlaying: "수업 중", statusTimeUp: "🔔 시간 종료", statusFinish: "완료",
         logStartWord: "시작", logFinishWord: "완료", logCancelWord: "취소",
-        quickStart: "▶️ 시작", quickFinish: "🏁 종료",
+        quickStart: "시작", quickFinish: "종료",
         grpWait: "⏳ 반 학생들 (Students List)", grpActive: "▶️ 수업 중 (In class)", grpFinish: "🏁 수업 완료 (Finished)",
         noRecords: "기록 없음", langText: "🌐 Language / 언어",
         days: ['일', '월', '화', '수', '목', '금', '토'],
@@ -87,6 +88,9 @@ const i18n = {
 
 window.onload = () => { loadData(); updateDateUI(); }; 
 setInterval(updateDateUI, 60000); 
+
+// 브라우저 닫을 때 백그라운드 상태 강제 저장
+window.addEventListener('beforeunload', () => { saveToStorage(); });
 
 function updateDateUI() {
     const now = new Date(); const t = i18n[currentLang];
@@ -102,7 +106,6 @@ function applyLanguage() {
     document.querySelectorAll(".editable-roster").forEach(el => { el.setAttribute("data-placeholder", t.placeholder); });
     updateDateUI(); generateStudents(); 
     for (let i = 0; i < DESK_COUNT; i++) updateBoxUI(i);
-
     renderLogs(); 
 }
 
@@ -222,7 +225,10 @@ function saveToStorage() {
         const data = { 
             deskCount: DESK_COUNT, academyName: academyName, className: className, students: studentsObj, logLeftItems: logLeftItems, logRightItems: logRightItems, 
             attendance: Array.from(attendanceMap.entries()), finishedSet: Array.from(finishedSet), assignOrderCounter: assignOrderCounter, 
-            timerStates: timers.map(t => ({ student: t.student, remainingTime: t.remainingTime, totalTime: t.totalTime, overTime: t.overTime, isOver: t.isOver })), 
+            timerStates: timers.map(t => ({ 
+                student: t.student, remainingTime: t.remainingTime, totalTime: t.totalTime, overTime: t.overTime, isOver: t.isOver, startTimeStr: t.startTimeStr,
+                isRunning: t.interval !== null, lastTick: t.lastTick 
+            })), 
             vols: { a: alarmVolume, t: ttsVolume, u: uiVolume, ttsVoice: document.getElementById("ttsVoiceSelect").value, melody: document.getElementById("melodyType").value, uiType: document.getElementById("uiSoundType").value }, 
             theme: currentTheme, nameColor: document.getElementById("nameColorSelect").value, language: currentLang,
             customStudentOrder: customStudentOrder, guestList: guestList
@@ -260,7 +266,25 @@ function loadData() {
             logLeftItems = data.logLeftItems || []; logRightItems = data.logRightItems || []; 
             attendanceMap = new Map(data.attendance || []); finishedSet = new Set(data.finishedSet || []); assignOrderCounter = data.assignOrderCounter || 0; 
             
-            timers = data.timerStates ? data.timerStates.map(ts => ({ ...ts, interval: null, lastTick: 0 })) : Array.from({length: DESK_COUNT}, () => ({ student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }));
+            // 타이머 백그라운드 복구 로직
+            timers = data.timerStates ? data.timerStates.map(ts => {
+                let t = { ...ts, interval: null, lastTick: ts.lastTick || 0 };
+                if (ts.isRunning && t.lastTick > 0) {
+                    const now = Date.now();
+                    const delta = Math.floor((now - t.lastTick) / 1000); 
+                    if (delta > 0) {
+                        if (t.remainingTime >= delta) {
+                            t.remainingTime -= delta;
+                        } else {
+                            t.overTime += (delta - t.remainingTime);
+                            t.remainingTime = 0;
+                        }
+                    }
+                    t.lastTick = now - ((now - t.lastTick) % 1000); 
+                }
+                return t;
+            }) : Array.from({length: DESK_COUNT}, () => ({ student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }));
+            
             while (timers.length < DESK_COUNT) { timers.push({ student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }); }
             if (timers.length > DESK_COUNT) { timers.length = DESK_COUNT; }
 
@@ -275,6 +299,15 @@ function loadData() {
             if(data.nameColor) { document.getElementById("nameColorSelect").value = data.nameColor; changeNameColor(); }
             
             applyLanguage(); createInitialGrid(); generateStudents(); renderLogs();
+            
+            if (data.timerStates) {
+                data.timerStates.forEach((ts, idx) => {
+                    if (ts.isRunning && timers[idx].student !== "(empty)") {
+                        resumeTimer(idx);
+                    }
+                });
+            }
+
         } else {
             updateContentEditable("studentInput_PRE", []); updateContentEditable("studentInput_BASIC", []); updateContentEditable("studentInput_INTER", []); updateContentEditable("studentInput_ADV", []); updateContentEditable("studentInput_PREP", []);
             timers = Array.from({length: DESK_COUNT}, () => ({ student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }));
@@ -315,6 +348,7 @@ function addGuest() { const input = document.getElementById('guestNameInput'); c
 window.removeGuest = function(name) { if(confirm(`게스트 '${name}' 학생을 명단에서 완전히 삭제하시겠습니까?`)) { guestList = guestList.filter(g => g !== name); customStudentOrder = customStudentOrder.filter(g => g !== name); if(finishedSet.has(name)) finishedSet.delete(name); playUISound('cancel'); generateStudents(); } };
 window.cancelFromCard = function(name) { let tIdx = timers.findIndex(t => t.student === name); if (tIdx !== -1) cancelSession(tIdx); };
 
+// ⭐ 레벨 태그(level-tag) 제거됨, 시작/종료 버튼 아이콘 제거됨
 function generateStudents() {
     document.getElementById("grid-unassigned").innerHTML = "";
     document.getElementById("grid-active").innerHTML = "";
@@ -338,11 +372,7 @@ function generateStudents() {
         const lvl = studentLevels[n];
         const btn = document.createElement("button"); btn.id = "btn-" + n; 
         
-        let levelLabel = (lvl === 'PREP') ? 'PREP31' : (lvl === 'ADV' ? 'ADV' : lvl); 
-        if(lvl === 'GUEST') levelLabel = 'GUEST';
-
         btn.innerHTML = `
-            <div class="level-tag">${levelLabel}</div>
             <div class="gauge-bg"></div>
             <button class="card-cancel-btn" onclick="event.stopPropagation(); cancelFromCard('${n}')">✖</button>
             <button class="guest-delete-btn" onclick="event.stopPropagation(); removeGuest('${n}')">✖</button>
@@ -397,6 +427,7 @@ function generateStudents() {
     saveToStorage();
 }
 
+// ⭐ 수업중 텍스트 배지 제거, 시작 시간 배지 띄우기
 function updateStudentStatus(name) {
     const tLang = i18n[currentLang];
     const btn = document.getElementById("btn-" + name); if (!btn) return;
@@ -407,7 +438,17 @@ function updateStudentStatus(name) {
     let badge = btn.querySelector(".status-badge");
     if (!badge) { badge = document.createElement("div"); badge.className = "status-badge"; btn.appendChild(badge); }
     badge.style.background = ""; badge.style.color = "";
+    badge.style.display = ""; 
     
+    let timeBadge = btn.querySelector(".start-time-badge");
+    if (!timeBadge) { 
+        timeBadge = document.createElement("div"); 
+        timeBadge.className = "start-time-badge"; 
+        timeBadge.title = "클릭하여 시작 시간 수정";
+        btn.appendChild(timeBadge); 
+    }
+    timeBadge.style.display = "none"; 
+
     const gridUnassigned = document.getElementById("grid-unassigned");
     const gridActive = document.getElementById("grid-active");
     const gridFinished = document.getElementById("grid-finished");
@@ -422,8 +463,21 @@ function updateStudentStatus(name) {
                 btn.classList.add("alarm-blink", "attended"); badge.innerHTML = tLang.statusTimeUp; 
                 badge.style.background = "var(--brand-danger)"; badge.style.color = "white"; 
             } else if (t.interval) { 
-                btn.classList.add("playing", "attended"); badge.innerHTML = tLang.statusPlaying; 
-                badge.style.background = "var(--accent)"; badge.style.color = "#fff"; 
+                btn.classList.add("playing", "attended"); 
+                
+                // 기존 수업중 배지는 완전히 숨깁니다
+                badge.style.display = "none"; 
+                
+                // 시간이 있으면 시간 배지 표시
+                if(t.startTimeStr) {
+                    timeBadge.innerHTML = `⏰ ${t.startTimeStr}`;
+                    timeBadge.style.display = "block";
+                    timeBadge.onclick = (e) => {
+                        e.stopPropagation();
+                        editActiveStartTime(name);
+                    };
+                }
+
             } else { 
                 btn.classList.add("attended"); badge.innerHTML = tLang.statusAssign; 
                 badge.style.background = "var(--brand-success)"; badge.style.color = "white"; 
@@ -431,10 +485,77 @@ function updateStudentStatus(name) {
             gridActive.appendChild(btn);
         } else { 
             badge.remove(); 
+            timeBadge.remove(); 
             gridUnassigned.appendChild(btn);
         }
     }
 }
+
+// ⭐ 커스텀 시간 입력 팝업창
+let timePromptCallback = null;
+
+function showTimePrompt(title, defaultTime, callback) {
+    playUISound('click');
+    let overlay = document.getElementById('custom-time-modal-overlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'custom-time-modal-overlay';
+        overlay.onclick = (e) => { if(e.target === overlay) closeTimePrompt(false); };
+        
+        overlay.innerHTML = `
+            <div class="custom-time-modal">
+                <h3 id="time-modal-title">시간 수정</h3>
+                <input type="time" id="time-modal-input" required>
+                <div class="modal-btns">
+                    <button class="btn-modal-cancel" onclick="closeTimePrompt(false)">취소</button>
+                    <button class="btn-modal-save" onclick="closeTimePrompt(true)">저장</button>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(overlay);
+    }
+    
+    document.getElementById('time-modal-title').innerText = title;
+    
+    if(!defaultTime) {
+        const now = new Date();
+        defaultTime = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    }
+    document.getElementById('time-modal-input').value = defaultTime;
+    timePromptCallback = callback;
+    
+    requestAnimationFrame(() => { overlay.classList.add('show'); });
+}
+
+window.closeTimePrompt = function(isSave) {
+    const overlay = document.getElementById('custom-time-modal-overlay');
+    overlay.classList.remove('show');
+    playUISound('click');
+    
+    if (isSave) {
+        const newTime = document.getElementById('time-modal-input').value;
+        if (timePromptCallback && newTime) timePromptCallback(newTime);
+    }
+    timePromptCallback = null;
+}
+
+window.editActiveStartTime = function(name) {
+    let tIdx = timers.findIndex(t => t.student === name);
+    if(tIdx === -1) return;
+    let t = timers[tIdx];
+
+    showTimePrompt(`[${name}] 수업 시작 시간`, t.startTimeStr, function(newTime) {
+        t.startTimeStr = newTime; 
+        
+        let logItem = logLeftItems.find(item => item.student === name && item.type === 'start');
+        if(logItem) {
+            logItem.time = newTime;
+            renderLogs();
+        }
+        updateStudentStatus(name); 
+        saveToStorage();
+    });
+};
 
 function createInitialGrid() {
     const grid = document.getElementById("grid"); grid.innerHTML = "";
@@ -515,12 +636,20 @@ function handleDropOnTimer(name, targetIdx, fromIdx) {
 
 function startTimer(id) {
     const target = timers[id]; if (target.interval || target.student === "(empty)") return;
-    initAudio(); playUISound('start'); logEvent(target.student, 'start', 'left'); target.lastTick = Date.now();
+    initAudio(); playUISound('start'); 
+    
+    const now = new Date();
+    const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+    target.startTimeStr = timeStr;
+    
+    logEvent(target.student, 'start', 'left', 0, timeStr); 
+    
+    target.lastTick = Date.now();
     
     target.interval = setInterval(() => {
-        const now = Date.now(); const delta = Math.floor((now - target.lastTick) / 1000);
+        const nowTick = Date.now(); const delta = Math.floor((nowTick - target.lastTick) / 1000);
         if (delta >= 1) {
-            target.lastTick = now - ((now - target.lastTick) % 1000);
+            target.lastTick = nowTick - ((nowTick - target.lastTick) % 1000);
             if (target.remainingTime > 0) {
                 target.remainingTime = Math.max(0, target.remainingTime - delta); 
                 updateGauge(target.student, target.remainingTime, target.totalTime); 
@@ -531,6 +660,32 @@ function startTimer(id) {
                 target.overTime += delta; document.getElementById(`display-${id}`).innerText = "+" + formatTime(target.overTime);
                 if (target.overTime >= 300) { finishSession(id); }
             }
+            saveToStorage(); 
+        }
+    }, 250);
+    
+    updateStudentStatus(target.student); 
+    updateBoxUI(id);
+}
+
+function resumeTimer(id) {
+    const target = timers[id]; if (target.interval || target.student === "(empty)") return;
+    
+    target.interval = setInterval(() => {
+        const nowTick = Date.now(); const delta = Math.floor((nowTick - target.lastTick) / 1000);
+        if (delta >= 1) {
+            target.lastTick = nowTick - ((nowTick - target.lastTick) % 1000);
+            if (target.remainingTime > 0) {
+                target.remainingTime = Math.max(0, target.remainingTime - delta); 
+                updateGauge(target.student, target.remainingTime, target.totalTime); 
+                document.getElementById(`display-${id}`).innerText = formatTime(target.remainingTime);
+                if (target.remainingTime === 0 && !target.isOver) triggerAlarm(id);
+            } else {
+                if (!target.isOver) triggerAlarm(id); 
+                target.overTime += delta; document.getElementById(`display-${id}`).innerText = "+" + formatTime(target.overTime);
+                if (target.overTime >= 300) { finishSession(id); }
+            }
+            saveToStorage(); 
         }
     }, 250);
     
@@ -543,19 +698,28 @@ function stopTimer(id) {
         clearInterval(timers[id].interval); timers[id].interval = null; playUISound('stop'); 
         updateStudentStatus(timers[id].student); 
         updateBoxUI(id);
+        saveToStorage(); 
     } 
 }
 
 function clearTime(id) { playUISound('cancel'); timers[id].remainingTime = 0; timers[id].totalTime = 0; timers[id].overTime = 0; timers[id].isOver = false; stopTimer(id); updateBoxUI(id); updateGauge(timers[id].student, 0, 1); saveToStorage(); }
 function cancelSession(id) { if(timers[id].student === "(empty)") return; playUISound('cancel'); const sn = timers[id].student; attendanceMap.delete(sn); resetTimerData(id, true); }
 function finishSession(id) { if(timers[id].student === "(empty)") return; playUISound('finish'); const sn = timers[id].student; finishedSet.add(sn); attendanceMap.delete(sn); logEvent(sn, 'finish', 'right', timers[id].overTime); resetTimerData(id, true); }
+
 function resetTimerData(id, resetUI) { stopTimer(id); const sn = timers[id].student; timers[id] = { student: "(empty)", remainingTime: 0, totalTime: 0, overTime: 0, interval: null, isOver: false, lastTick: 0 }; updateBoxUI(id); if (resetUI) updateStudentStatus(sn); saveToStorage(); }
-function adjustTime(id, sec) { playUISound('click'); timers[id].remainingTime = Math.max(0, timers[id].remainingTime + sec); if(timers[id].remainingTime > timers[id].totalTime || timers[id].totalTime === 0) { timers[id].totalTime = timers[id].remainingTime; } if(timers[id].remainingTime > 0) { timers[id].isOver = false; timers[id].overTime = 0; updateStudentStatus(timers[id].student); } updateBoxUI(id); updateGauge(timers[id].student, timers[id].remainingTime, timers[id].totalTime); }
+function adjustTime(id, sec) { 
+    playUISound('click'); 
+    timers[id].remainingTime = Math.max(0, timers[id].remainingTime + sec); 
+    if(timers[id].remainingTime > timers[id].totalTime || timers[id].totalTime === 0) { timers[id].totalTime = timers[id].remainingTime; } 
+    if(timers[id].remainingTime > 0) { timers[id].isOver = false; timers[id].overTime = 0; updateStudentStatus(timers[id].student); } 
+    updateBoxUI(id); updateGauge(timers[id].student, timers[id].remainingTime, timers[id].totalTime); 
+    saveToStorage(); 
+}
 function updateGauge(studentName, remaining, total) { const btn = document.getElementById("btn-" + studentName); if (!btn) return; const gauge = btn.querySelector(".gauge-bg"); if (!gauge || total <= 0) return; gauge.style.width = (((total - remaining) / total) * 100) + "%"; }
 function formatTime(t) { return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; }
 
 // ==========================================
-// 7. AUDIO & TTS
+// 7. AUDIO & TTS (⭐ 한국어와 영어 쪼개서 읽기)
 // ==========================================
 function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
 function triggerAlarm(id) { timers[id].isOver = true; updateStudentStatus(timers[id].student); updateBoxUI(id); let melodyType = parseInt(document.getElementById("melodyType").value); playMelody(melodyType); playAlarmTTS(timers[id].student); }
@@ -569,22 +733,49 @@ function playAlarmTTS(studentName) {
         let voices = window.speechSynthesis.getVoices(); 
         if (voices.length === 0) { setTimeout(() => playAlarmTTS(studentName).then(resolve), 100); return; }
 
-        let u = new SpeechSynthesisUtterance(); u.volume = ttsVolume; u.rate = 1.05; u.pitch = 1.1; 
-        
+        window.speechSynthesis.cancel(); 
+
+        const getKoVoice = () => voices.find(v => v.name.includes('Google') && v.lang.includes('ko')) ||
+                      voices.find(v => v.name.includes('Natural') && v.lang.includes('ko') && !v.name.includes('Male') && !v.name.includes('InJoon')) ||
+                      voices.find(v => v.lang.includes('ko-KR') && (v.name.includes('Female') || v.name.includes('여성') || v.name.includes('Heami'))) ||
+                      voices.find(v => v.lang.includes('ko') && !v.name.includes('Male') && !v.name.includes('남성')) ||
+                      voices.find(v => v.lang.includes('ko'));
+
+        const getEnVoice = () => voices.find(v => v.name === 'Google US English') ||
+                      voices.find(v => v.name.includes('Google') && v.lang.includes('en')) ||
+                      voices.find(v => v.name.includes('Natural') && v.lang.includes('en') && !v.name.includes('Male') && !v.name.includes('Guy')) ||
+                      voices.find(v => v.lang.includes('en-US') && (v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Female'))) ||
+                      voices.find(v => v.lang.includes('en') && !v.name.includes('Male') && !v.name.includes('Guy')) ||
+                      voices.find(v => v.lang.includes('en'));
+
         if (voiceType === "1") { 
-            u.text = `${studentName}! ${studentName}!`; u.lang = 'ko-KR'; 
-            let koVoice = voices.find(v => v.name.includes('Natural') && v.lang.includes('ko') && !v.name.includes('InJoon') && !v.name.includes('Guy') && !v.name.includes('Male')) || voices.find(v => v.lang.includes('ko-KR') && (v.name.includes('Female') || v.name.includes('여성'))) || voices.find(v => v.lang.includes('ko') && !v.name.includes('Male') && !v.name.includes('남성')); 
+            let u = new SpeechSynthesisUtterance(`${studentName}! ${studentName}!`); 
+            u.volume = ttsVolume; u.rate = 1.05; u.pitch = 1.1; u.lang = 'ko-KR'; 
+            let koVoice = getKoVoice();
             if (koVoice) u.voice = koVoice; 
+            u.onend = resolve; u.onerror = resolve; 
+            window.__tts_queue.push(u); window.speechSynthesis.speak(u);
         } 
         else if (voiceType === "2" || voiceType === "3") { 
-            u.text = voiceType === "2" ? `${studentName}! Let's go home!` : `${studentName}! Time's up! It's time to go home!`; u.lang = 'en-US'; 
-            let enVoice = voices.find(v => v.name.includes('Multilingual') && v.name.includes('Natural') && !v.name.includes('Guy') && !v.name.includes('Christopher') && !v.name.includes('Male')) || voices.find(v => v.name.includes('Natural') && v.lang.includes('en') && !v.name.includes('Guy') && !v.name.includes('Christopher') && !v.name.includes('Male')) || voices.find(v => v.lang.includes('en-US') && (v.name.includes('Zira') || v.name.includes('Samantha') || v.name.includes('Google') || v.name.includes('Female'))) || voices.find(v => v.lang.includes('en') && !v.name.includes('Guy') && !v.name.includes('Christopher') && !v.name.includes('Male')); 
-            if (enVoice) u.voice = enVoice; 
+            let u1 = new SpeechSynthesisUtterance(`${studentName}!`);
+            u1.volume = ttsVolume; u1.rate = 1.05; u1.pitch = 1.1; u1.lang = 'ko-KR';
+            let koVoice = getKoVoice();
+            if (koVoice) u1.voice = koVoice;
+            
+            let phrase = voiceType === "2" ? "Let's go home!" : "Time's up! It's time to go home!";
+            let u2 = new SpeechSynthesisUtterance(phrase);
+            u2.volume = ttsVolume; u2.rate = 1.05; u2.pitch = 1.1; u2.lang = 'en-US';
+            let enVoice = getEnVoice();
+            if (enVoice) u2.voice = enVoice;
+            
+            u2.onend = resolve; u2.onerror = resolve; 
+            
+            window.__tts_queue.push(u1); window.__tts_queue.push(u2);
+            window.speechSynthesis.speak(u1); window.speechSynthesis.speak(u2);
         }
-        
-        u.onend = resolve; u.onerror = resolve; window.__tts_queue.push(u); window.speechSynthesis.speak(u);
     });
 }
+
 function playMelody(type) {
     return new Promise(resolve => {
         initAudio();
@@ -645,8 +836,9 @@ function previewRealtime(type) {
 // ==========================================
 // 8. LOGGING & UTILITIES
 // ==========================================
-function logEvent(student, type, side, overTime = 0) {
-    const now = new Date(); const timeStr = `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
+function logEvent(student, type, side, overTime = 0, forceTime = null) {
+    const now = new Date(); 
+    const timeStr = forceTime || `${String(now.getHours()).padStart(2,'0')}:${String(now.getMinutes()).padStart(2,'0')}`;
     const obj = { time: timeStr, student: student, type: type, overTime: overTime };
     if (side === 'left') logLeftItems.unshift(obj); else logRightItems.unshift(obj);
     renderLogs(); saveToStorage();
@@ -654,17 +846,41 @@ function logEvent(student, type, side, overTime = 0) {
 
 function renderLogs() { 
     const t = i18n[currentLang];
-    const renderItem = (item) => {
+    const renderItem = (item, index, side) => {
         if (typeof item === 'string') return `<div style="margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:5px;">${item}</div>`;
         let actionText = "";
         if (item.type === 'start') actionText = `▶️ ${item.student} ${t.logStartWord}`;
         else if (item.type === 'finish') { const extraStr = item.overTime > 0 ? ` (+${formatTime(item.overTime)})` : ""; actionText = `🏁 ${item.student} ${t.logFinishWord}${extraStr}`; }
         else if (item.type === 'game') actionText = `🎉 <span style="color:var(--accent); font-weight:900;">[이벤트 당첨] ${item.student}</span>`;
-        return `<div style="margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:5px;">[${item.time}] ${actionText}</div>`;
+        
+        return `<div style="margin-bottom:8px; border-bottom:1px solid var(--border); padding-bottom:5px;">[<span class="editable-log-time" onclick="editLogTime('${side}', ${index})" style="cursor:pointer; text-decoration:underline;" title="클릭하여 시간 수정">${item.time}</span>] ${actionText}</div>`;
     };
-    document.getElementById("log-left").innerHTML = logLeftItems.map(renderItem).join(''); 
-    document.getElementById("log-right").innerHTML = logRightItems.map(renderItem).join(''); 
+    
+    document.getElementById("log-left").innerHTML = logLeftItems.map((item, idx) => renderItem(item, idx, 'left')).join(''); 
+    document.getElementById("log-right").innerHTML = logRightItems.map((item, idx) => renderItem(item, idx, 'right')).join(''); 
 }
+
+window.editLogTime = function(side, index) {
+    const list = (side === 'left') ? logLeftItems : logRightItems;
+    const item = list[index];
+
+    if (!item || typeof item === 'string') return;
+
+    let title = item.type === 'start' ? `[${item.student}] 시작 시간 수정` : `[${item.student}] 종료 시간 수정`;
+
+    showTimePrompt(title, item.time, function(newTime) {
+        item.time = newTime;
+        
+        if(item.type === 'start') {
+            let tIdx = timers.findIndex(t => t.student === item.student);
+            if(tIdx !== -1) timers[tIdx].startTimeStr = newTime;
+            updateStudentStatus(item.student);
+        }
+        
+        renderLogs();
+        saveToStorage();
+    });
+};
 
 function saveLogAction() { 
     const t = i18n[currentLang]; const now = new Date(); const dateString = `${now.getFullYear()}. ${now.getMonth()+1}. ${now.getDate()} (${t.days[now.getDay()]})`;
@@ -705,7 +921,7 @@ let ladderRungs = [];
 let targetWinnerIndex = -1;
 let animReq;
 let isResultRevealed = false; 
-let isGameAnimating = false; // 공통 애니메이션 상태
+let isGameAnimating = false;
 
 const ladderColors = ['#ef4444', '#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ec4899', '#06b6d4', '#f97316', '#84cc16', '#6366f1', '#14b8a6', '#d946ef', '#eab308', '#0ea5e9', '#f43f5e'];
 
@@ -756,9 +972,6 @@ function stopLadderBGM() {
     }
 }
 
-// ----------------------------------
-// LADDER LOGIC
-// ----------------------------------
 function setupLadder() {
     playUISound('click');
     
@@ -1038,9 +1251,6 @@ function startLadderAnimation() {
     animReq = requestAnimationFrame(drawFrame);
 }
 
-// ----------------------------------
-// ROULETTE LOGIC
-// ----------------------------------
 function setupRoulette() {
     playUISound('click');
     if(animReq) { cancelAnimationFrame(animReq); animReq = null; }
