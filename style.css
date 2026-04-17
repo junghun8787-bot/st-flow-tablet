@@ -2,14 +2,14 @@
    [ CSS 목차 ]
    1. FONTS & VARIABLES
    2. COLOR THEMES
-   3. RESET & BASE (스크롤바 추가)
-   4. HEADER & LEFT NAV (미니멀 & 아이콘)
+   3. RESET & BASE
+   4. HEADER & LEFT NAV
    5. UTILITIES & COMPONENTS
-   6. VIEW: ROSTER (좌측 명단 / 우측 상하 분할)
+   6. VIEW: ROSTER
    7. VIEW: TIMER
    8. VIEW: LOG & SETTINGS
-   9. VIEW: GAME (미니게임 - 사다리, 룰렛)
-   10. FOOTER
+   9. VIEW: GAME 
+   10. MODAL (시간 수정 팝업)
 ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;500;600;700;900&family=JetBrains+Mono:wght@700;800&family=Montserrat:wght@500;700;900&display=swap');
@@ -43,8 +43,8 @@
     --selena-pink: #ff00a3;
     --selena-orange: #f0701f;
     --selena-cyan: #21c7fa;
-    /* ⭐ PREP31의 칙칙한 브라운을 고급스러운 모카 브라운으로 변경 */
-    --selena-brown: #9E7453; 
+    /* ⭐ PREP31 모카 브라운으로 변경 */
+    --selena-brown: #8D6A52; 
 }
 
 body[class*="theme-23"], body[class*="theme-27"], body[class*="theme-28"] {
@@ -108,7 +108,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-track, body[class*="theme-27"] ::-we
 body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-webkit-scrollbar-thumb, body[class*="theme-28"] ::-webkit-scrollbar-thumb { background-color: rgba(255,255,255,0.3); }
 
 /* --------------------------------------------------------------------------
-   4. HEADER & LEFT NAV (미니멀 사이즈 및 아이콘 모드 최적화)
+   4. HEADER & LEFT NAV
 -------------------------------------------------------------------------- */
 .global-header { 
     position: fixed; top: 0; left: 75px; width: calc(100% - 75px);
@@ -176,7 +176,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .btn-3d-sm:active { box-shadow: var(--shadow-inner); transform: scale(0.96) translateY(2px); border-color: transparent; }
 
 /* --------------------------------------------------------------------------
-   6. VIEW: ROSTER (좌측 명단 / 우측 상하 분할)
+   6. VIEW: ROSTER 
 -------------------------------------------------------------------------- */
 .roster-columns-wrapper { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; align-items: start; width: 100%; margin-bottom: 20px;}
 
@@ -193,23 +193,32 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 #grid-active { display: grid; gap: 15px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); height: auto; }
 #grid-finished { display: grid; gap: 10px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
 
+/* 학생 카드 기본 디자인 */
 .student-btn { font-weight: 900; cursor: grab; overflow: hidden; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; font-family: 'Pretendard', sans-serif; touch-action: none; background: var(--btn-gradient); border: none; box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; transform: translateZ(0); }
 .student-btn:active { transform: scale(0.96) translateY(2px); box-shadow: var(--shadow-inner); }
 
 #grid-unassigned .student-btn { height: 60px; font-size: 18px; border-radius: 12px;}
-#grid-unassigned .student-btn .name-text { margin-bottom: 0; margin-top: 0px; } 
+#grid-unassigned .student-btn .name-text { margin-top: 0; } 
 #grid-unassigned .student-btn .status-badge { display: none !important; } 
 
-#grid-active .student-btn { height: 135px; font-size: 32px; border-radius: 16px;}
-#grid-active .student-btn .name-text { margin-top: 10px; margin-bottom: 25px; } 
+/* ⭐ 활성 명단 학생 카드 - 중앙 정렬 및 애니메이션 */
+#grid-active .student-btn { height: 135px; font-size: 32px; border-radius: 16px; justify-content: center; }
+#grid-active .student-btn .name-text { 
+    margin-top: 0; margin-bottom: 20px; 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 내려가는 애니메이션 */
+} 
+/* 시작버튼 눌렸을 때 클래스(is-started)가 붙으면 이름이 아래로 내려감 */
+#grid-active .student-btn.is-started .name-text {
+    transform: translateY(12px); 
+}
 
 #grid-finished .student-btn { height: 55px; font-size: 18px; border-radius: 10px;}
-#grid-finished .student-btn .name-text { margin-bottom: 0; margin-top: 0px; } 
+#grid-finished .student-btn .name-text { margin-top: 0; } 
 #grid-finished .student-btn .status-badge { display: none !important; } 
 
 .student-btn .gauge-bg, .student-btn .name-text, .student-btn .status-badge { pointer-events: none; }
 .gauge-bg { position: absolute; top: 0; left: 0; height: 100%; width: 0%; z-index: -1; transition: width 0.5s ease; border-radius: 12px 0 0 12px; }
-.name-text { position: relative; z-index: 2; color: var(--custom-name-color); text-shadow: 1px 1px 2px rgba(255,255,255,0.6), -1px -1px 2px rgba(0,0,0,0.05), var(--custom-name-shadow); letter-spacing: 1px; transition: all 0.3s; }
+.name-text { position: relative; z-index: 2; color: var(--custom-name-color); text-shadow: 1px 1px 2px rgba(255,255,255,0.6), -1px -1px 2px rgba(0,0,0,0.05), var(--custom-name-shadow); letter-spacing: 1px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
 .card-cancel-btn { position: absolute; top: 6px; left: 6px; width: 26px; height: 26px; border-radius: 50%; background: var(--bg-main); color: var(--brand-danger); border: 1px solid rgba(239, 68, 68, 0.3); display: none; align-items: center; justify-content: center; font-weight: 900; font-size: 12px; cursor: pointer; z-index: 10; box-shadow: var(--shadow-btn); transition: 0.2s; font-family: 'Montserrat', sans-serif;}
 .card-cancel-btn:hover { background: var(--brand-danger); color: white; transform: scale(1.1); }
@@ -228,13 +237,12 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .student-btn.alarm-blink .alarm-alert-text { display: block; animation: blinker 0.6s linear infinite; }
 @keyframes blinker { 50% { opacity: 0.2; } }
 
-/* ⭐ 레벨 컬러 업데이트 (PREP31 컬러 변경됨) */
+/* ⭐ 레벨 컬러 업데이트 (테두리 및 게이지에만 표시됨) */
 .level-PRE { border-color: var(--selena-yellow); background: linear-gradient(135deg, rgba(255, 215, 0, 0.45) 0%, rgba(255, 215, 0, 0.1) 100%); } .level-PRE .gauge-bg { background: rgba(255, 215, 0, 0.8); } 
 .level-BASIC { border-color: var(--selena-pink); background: linear-gradient(135deg, rgba(255, 0, 163, 0.35) 0%, rgba(255, 0, 163, 0.05) 100%); } .level-BASIC .gauge-bg { background: rgba(255, 0, 163, 0.7); } 
 .level-INTER { border-color: var(--selena-orange); background: linear-gradient(135deg, rgba(240, 112, 31, 0.35) 0%, rgba(240, 112, 31, 0.05) 100%); } .level-INTER .gauge-bg { background: rgba(240, 112, 31, 0.7); } 
 .level-ADV { border-color: var(--selena-cyan); background: linear-gradient(135deg, rgba(33, 199, 250, 0.4) 0%, rgba(33, 199, 250, 0.1) 100%); } .level-ADV .gauge-bg { background: rgba(33, 199, 250, 0.75); } 
-/* 변경된 모카 브라운(PREP31) */
-.level-PREP { border-color: var(--selena-brown); background: linear-gradient(135deg, rgba(158, 116, 83, 0.35) 0%, rgba(158, 116, 83, 0.05) 100%); } .level-PREP .gauge-bg { background: rgba(158, 116, 83, 0.7); } 
+.level-PREP { border-color: var(--selena-brown); background: linear-gradient(135deg, rgba(141, 106, 82, 0.35) 0%, rgba(141, 106, 82, 0.05) 100%); } .level-PREP .gauge-bg { background: rgba(141, 106, 82, 0.7); } 
 .level-GUEST { border-color: #94a3b8; background: linear-gradient(135deg, rgba(148, 163, 184, 0.35) 0%, rgba(148, 163, 184, 0.05) 100%); } .level-GUEST .gauge-bg { background: rgba(148, 163, 184, 0.7); } 
 
 .status-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 6px; transition: 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 5; font-family: 'Pretendard', sans-serif; }
@@ -243,6 +251,30 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .student-btn.finished { opacity: 0.6; filter: grayscale(80%); box-shadow: var(--shadow-inner); background: var(--bg-main); border-color: transparent;}
 .student-btn.finished .status-badge { background: transparent; color: var(--text-muted); box-shadow: none; border: 1px solid var(--border); }
 .student-btn.drag-over { transform: scale(1.05); box-shadow: var(--shadow-pop) !important; border: 3px solid var(--accent); z-index: 10; } 
+
+/* ⭐ 상단 중앙 시작 시간 태그 (클릭해서 수정) */
+.start-time-tag {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 900;
+    z-index: 4;
+    letter-spacing: 1px;
+    border-radius: 0 0 10px 10px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 1px 1px 3px rgba(255,255,255,0.4);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 13px;
+    padding: 4px 14px;
+    background: var(--bg-card);
+    color: var(--accent);
+    border: 2px solid var(--accent);
+    border-top: none;
+    cursor: pointer;
+    display: none;
+}
+.start-time-tag:hover { background: var(--accent); color: #fff; padding-top: 6px; }
 
 .btn-3d:hover, .btn-3d-sm:hover, .action-btn:hover, .student-btn:hover, .quick-btn:hover { transform: translateY(-3px); filter: brightness(1.05); box-shadow: 0 10px 20px rgba(0,0,0,0.15), -4px -4px 12px rgba(255,255,255,0.9); transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); z-index: 10; }
 #grid-active .student-btn.attended:not(.playing):not(.alarm-blink) .status-badge { display: none !important; }
@@ -288,7 +320,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .timer-bg-BASIC { background: rgba(255, 0, 163, 0.25); }
 .timer-bg-INTER { background: rgba(240, 112, 31, 0.25); }
 .timer-bg-ADV { background: rgba(33, 199, 250, 0.3); }
-.timer-bg-PREP { background: rgba(158, 116, 83, 0.2); }
+.timer-bg-PREP { background: rgba(141, 106, 82, 0.2); }
 .timer-bg-GUEST { background: rgba(148, 163, 184, 0.3); }
 
 .student-name-display { font-size: 26px; font-weight: 900; color: var(--custom-name-color); margin: 0 0 4px 0; text-shadow: var(--custom-name-shadow); letter-spacing: 1px; min-height: 32px;}
@@ -329,6 +361,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .log-column-wrapper { flex: 1; display: flex; flex-direction: column; gap: 15px; height: 100%; min-height: 0; }
 .log-column-title { color: var(--text-main); font-weight: 900; font-size: 20px; text-align: center; padding: 15px; border-radius: 16px; font-family: 'Pretendard', sans-serif; letter-spacing: 1px; flex-shrink: 0; }
 .log-column { flex: 1; overflow-y: auto; background: var(--bg-main); border-radius: 20px; padding: 25px; font-family: 'JetBrains Mono', monospace; font-size: 18px; font-weight: 700; color: var(--text-main); box-shadow: var(--shadow-inner); line-height: 1.6; letter-spacing: 0.5px; border: 1px solid var(--border); }
+.editable-log-time:hover { color: var(--accent); font-weight: bold; cursor: pointer;}
 
 .settings-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; align-items: stretch; }
 .settings-card { background: var(--bg-main); background-image: var(--box-gradient); border: 2px solid var(--border); border-radius: 28px; padding: 35px; box-shadow: var(--shadow-pop); display: flex; flex-direction: column; position: relative;}
@@ -362,7 +395,40 @@ select { cursor: pointer; text-align: left; }
 .active-game-tab { background: var(--accent) !important; color: #fff !important; box-shadow: var(--shadow-inner) !important; border-color: transparent !important; }
 
 /* --------------------------------------------------------------------------
-   10. FOOTER
+   10. MODAL (시간 수정 팝업 등)
+-------------------------------------------------------------------------- */
+#custom-time-modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px);
+    display: flex; justify-content: center; align-items: center; z-index: 9999;
+    opacity: 0; pointer-events: none; transition: opacity 0.2s ease-in-out;
+}
+#custom-time-modal-overlay.show { opacity: 1; pointer-events: auto; }
+.custom-time-modal {
+    background: var(--bg-card, #ffffff); padding: 25px; border-radius: 16px; 
+    box-shadow: 0 15px 35px rgba(0,0,0,0.4); text-align: center; width: 280px;
+    transform: translateY(20px) scale(0.95); transition: all 0.2s ease-out;
+    border: 1px solid var(--border, #ccc);
+}
+#custom-time-modal-overlay.show .custom-time-modal { transform: translateY(0) scale(1); }
+.custom-time-modal h3 { margin: 0 0 15px 0; color: var(--text-main, #333); font-size: 18px; font-weight: 900; }
+.custom-time-modal input[type="time"] {
+    font-size: 32px; padding: 10px; border: 2px solid var(--accent, #2563eb);
+    border-radius: 12px; width: 100%; text-align: center; margin-bottom: 20px;
+    font-family: inherit; font-weight: bold; background: var(--bg-body, #fff);
+    color: var(--text-main, #000); outline: none; box-sizing: border-box;
+}
+.custom-time-modal .modal-btns { display: flex; gap: 10px; }
+.custom-time-modal .modal-btns button {
+    flex: 1; padding: 12px; border: none; border-radius: 10px; font-weight: bold; 
+    font-size: 15px; cursor: pointer; transition: filter 0.2s;
+}
+.btn-modal-cancel { background: var(--border, #ddd); color: var(--text-main, #333); }
+.btn-modal-save { background: var(--accent, #2563eb); color: #fff; }
+.btn-modal-cancel:hover, .btn-modal-save:hover { filter: brightness(1.1); }
+
+/* --------------------------------------------------------------------------
+   11. FOOTER
 -------------------------------------------------------------------------- */
 .global-footer { text-align: center; padding: 20px 20px 30px 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 14px; font-weight: 600; letter-spacing: 1px; }
 .global-footer span { color: var(--accent); font-weight: 900; }
