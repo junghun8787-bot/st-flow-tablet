@@ -43,8 +43,8 @@
     --selena-pink: #ff00a3;
     --selena-orange: #f0701f;
     --selena-cyan: #21c7fa;
-    /* ⭐ PREP31 모카 브라운으로 변경 */
-    --selena-brown: #8D6A52; 
+    /* ⭐ PREP31: 회색빛을 없앤 진하고 따뜻한 초콜릿 모카 브라운 */
+    --selena-brown: #7B4A3A; 
 }
 
 body[class*="theme-23"], body[class*="theme-27"], body[class*="theme-28"] {
@@ -193,27 +193,48 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 #grid-active { display: grid; gap: 15px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); height: auto; }
 #grid-finished { display: grid; gap: 10px; margin-top: 10px; min-height: 80px; align-content: start; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); }
 
-/* 학생 카드 기본 디자인 */
-.student-btn { font-weight: 900; cursor: grab; overflow: hidden; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; font-family: 'Pretendard', sans-serif; touch-action: none; background: var(--btn-gradient); border: none; box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; transform: translateZ(0); }
+/* ⭐ 학생 카드 기본 디자인 (touch-action: pan-y로 변경하여 위아래 터치 스크롤 허용) */
+.student-btn { font-weight: 900; cursor: grab; overflow: hidden; z-index: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; font-family: 'Pretendard', sans-serif; touch-action: pan-y; background: var(--btn-gradient); border: none; box-shadow: var(--shadow-pop), inset 2px 2px 5px var(--inner-shine), inset -2px -2px 5px rgba(0,0,0,0.05); transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); will-change: transform; transform: translateZ(0); }
 .student-btn:active { transform: scale(0.96) translateY(2px); box-shadow: var(--shadow-inner); }
 
-#grid-unassigned .student-btn { height: 60px; font-size: 18px; border-radius: 12px;}
-#grid-unassigned .student-btn .name-text { margin-top: 0; } 
+/* ⭐ 명단창(대기) 학생 카드 - 크기 확대 및 또렷하게 수정 */
+#grid-unassigned .student-btn { 
+    height: 68px; /* 크기 살짝 확대 */
+    font-size: 22px; /* 폰트 확대 (기존 18 -> 22) */
+    border-radius: 12px; 
+    background: var(--bg-card); /* 흐릿한 반사광 제거, 단색 화이트 배경 */
+    border: 2px solid var(--border); 
+    box-shadow: var(--shadow-btn);
+}
+#grid-unassigned .student-btn .name-text { 
+    margin-top: 0; 
+    text-shadow: none; /* 흐릿한 그림자 제거 */
+    color: var(--text-main); /* 텍스트를 또렷한 검정으로 */
+    font-weight: 900;
+} 
 #grid-unassigned .student-btn .status-badge { display: none !important; } 
 
-/* ⭐ 활성 명단 학생 카드 - 중앙 정렬 및 애니메이션 */
+/* 활성 명단 학생 카드 - 중앙 정렬 및 애니메이션 */
 #grid-active .student-btn { height: 135px; font-size: 32px; border-radius: 16px; justify-content: center; }
 #grid-active .student-btn .name-text { 
     margin-top: 0; margin-bottom: 20px; 
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* 내려가는 애니메이션 */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); 
 } 
-/* 시작버튼 눌렸을 때 클래스(is-started)가 붙으면 이름이 아래로 내려감 */
-#grid-active .student-btn.is-started .name-text {
-    transform: translateY(12px); 
-}
+#grid-active .student-btn.is-started .name-text { transform: translateY(12px); }
 
-#grid-finished .student-btn { height: 55px; font-size: 18px; border-radius: 10px;}
-#grid-finished .student-btn .name-text { margin-top: 0; } 
+/* ⭐ 수업 완료 학생 카드 - 크기 및 또렷함 수정 */
+#grid-finished .student-btn { 
+    height: 60px; /* 높이 약간 확대 */
+    font-size: 20px; /* 폰트 확대 (기존 18 -> 20) */
+    border-radius: 10px;
+    background: var(--bg-card); 
+    border: 1px solid var(--border); 
+}
+#grid-finished .student-btn .name-text { 
+    margin-top: 0; 
+    text-shadow: none; 
+    color: var(--text-muted); /* 눈에 잘 띄게 채도 조정 */
+} 
 #grid-finished .student-btn .status-badge { display: none !important; } 
 
 .student-btn .gauge-bg, .student-btn .name-text, .student-btn .status-badge { pointer-events: none; }
@@ -237,12 +258,13 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .student-btn.alarm-blink .alarm-alert-text { display: block; animation: blinker 0.6s linear infinite; }
 @keyframes blinker { 50% { opacity: 0.2; } }
 
-/* ⭐ 레벨 컬러 업데이트 (테두리 및 게이지에만 표시됨) */
+/* ⭐ 레벨 컬러 업데이트 (테두리 및 게이지) */
 .level-PRE { border-color: var(--selena-yellow); background: linear-gradient(135deg, rgba(255, 215, 0, 0.45) 0%, rgba(255, 215, 0, 0.1) 100%); } .level-PRE .gauge-bg { background: rgba(255, 215, 0, 0.8); } 
 .level-BASIC { border-color: var(--selena-pink); background: linear-gradient(135deg, rgba(255, 0, 163, 0.35) 0%, rgba(255, 0, 163, 0.05) 100%); } .level-BASIC .gauge-bg { background: rgba(255, 0, 163, 0.7); } 
 .level-INTER { border-color: var(--selena-orange); background: linear-gradient(135deg, rgba(240, 112, 31, 0.35) 0%, rgba(240, 112, 31, 0.05) 100%); } .level-INTER .gauge-bg { background: rgba(240, 112, 31, 0.7); } 
 .level-ADV { border-color: var(--selena-cyan); background: linear-gradient(135deg, rgba(33, 199, 250, 0.4) 0%, rgba(33, 199, 250, 0.1) 100%); } .level-ADV .gauge-bg { background: rgba(33, 199, 250, 0.75); } 
-.level-PREP { border-color: var(--selena-brown); background: linear-gradient(135deg, rgba(141, 106, 82, 0.35) 0%, rgba(141, 106, 82, 0.05) 100%); } .level-PREP .gauge-bg { background: rgba(141, 106, 82, 0.7); } 
+/* ⭐ PREP31: 새로운 모카 브라운 컬러 적용 (rgba로 변환된 값) */
+.level-PREP { border-color: var(--selena-brown); background: linear-gradient(135deg, rgba(123, 74, 58, 0.35) 0%, rgba(123, 74, 58, 0.05) 100%); } .level-PREP .gauge-bg { background: rgba(123, 74, 58, 0.7); } 
 .level-GUEST { border-color: #94a3b8; background: linear-gradient(135deg, rgba(148, 163, 184, 0.35) 0%, rgba(148, 163, 184, 0.05) 100%); } .level-GUEST .gauge-bg { background: rgba(148, 163, 184, 0.7); } 
 
 .status-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 6px; transition: 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 5; font-family: 'Pretendard', sans-serif; }
@@ -252,7 +274,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .student-btn.finished .status-badge { background: transparent; color: var(--text-muted); box-shadow: none; border: 1px solid var(--border); }
 .student-btn.drag-over { transform: scale(1.05); box-shadow: var(--shadow-pop) !important; border: 3px solid var(--accent); z-index: 10; } 
 
-/* ⭐ 상단 중앙 시작 시간 태그 (클릭해서 수정) */
+/* 상단 중앙 시작 시간 태그 (클릭해서 수정) */
 .start-time-tag {
     position: absolute;
     top: 0;
