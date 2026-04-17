@@ -43,7 +43,8 @@
     --selena-pink: #ff00a3;
     --selena-orange: #f0701f;
     --selena-cyan: #21c7fa;
-    --selena-brown: #795548;
+    /* ⭐ PREP31의 칙칙한 브라운을 고급스러운 모카 브라운으로 변경 */
+    --selena-brown: #9E7453; 
 }
 
 body[class*="theme-23"], body[class*="theme-27"], body[class*="theme-28"] {
@@ -196,19 +197,17 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .student-btn:active { transform: scale(0.96) translateY(2px); box-shadow: var(--shadow-inner); }
 
 #grid-unassigned .student-btn { height: 60px; font-size: 18px; border-radius: 12px;}
-#grid-unassigned .student-btn .name-text { margin-bottom: 0; margin-top: 3px; } 
-#grid-unassigned .student-btn .level-tag { font-size: 9px; padding: 2px 8px; border-radius: 0 0 6px 6px;}
+#grid-unassigned .student-btn .name-text { margin-bottom: 0; margin-top: 0px; } 
 #grid-unassigned .student-btn .status-badge { display: none !important; } 
 
 #grid-active .student-btn { height: 135px; font-size: 32px; border-radius: 16px;}
 #grid-active .student-btn .name-text { margin-top: 10px; margin-bottom: 25px; } 
 
 #grid-finished .student-btn { height: 55px; font-size: 18px; border-radius: 10px;}
-#grid-finished .student-btn .name-text { margin-bottom: 0; margin-top: 3px; } 
-#grid-finished .student-btn .level-tag { font-size: 9px; padding: 2px 8px; border-radius: 0 0 6px 6px;}
+#grid-finished .student-btn .name-text { margin-bottom: 0; margin-top: 0px; } 
 #grid-finished .student-btn .status-badge { display: none !important; } 
 
-.student-btn .gauge-bg, .student-btn .name-text, .student-btn .level-tag, .student-btn .status-badge { pointer-events: none; }
+.student-btn .gauge-bg, .student-btn .name-text, .student-btn .status-badge { pointer-events: none; }
 .gauge-bg { position: absolute; top: 0; left: 0; height: 100%; width: 0%; z-index: -1; transition: width 0.5s ease; border-radius: 12px 0 0 12px; }
 .name-text { position: relative; z-index: 2; color: var(--custom-name-color); text-shadow: 1px 1px 2px rgba(255,255,255,0.6), -1px -1px 2px rgba(0,0,0,0.05), var(--custom-name-shadow); letter-spacing: 1px; transition: all 0.3s; }
 
@@ -219,7 +218,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .quick-controls { display: none; position: absolute; bottom: 8px; left: 0; width: 100%; justify-content: center; gap: 6px; z-index: 10; padding: 0 10px; }
 #grid-active .student-btn.attended .quick-controls, #grid-active .student-btn.playing .quick-controls, #grid-active .student-btn.alarm-blink .quick-controls { display: flex; }
 
-.quick-btn { flex: 1; padding: 8px 0; border-radius: 10px; font-size: 13px; font-weight: 900; border: none; box-shadow: var(--shadow-btn); cursor: pointer; transition: 0.2s; color: white; font-family: 'Pretendard', sans-serif; }
+.quick-btn { flex: 1; padding: 8px 0; border-radius: 10px; font-size: 14px; font-weight: 900; border: none; box-shadow: var(--shadow-btn); cursor: pointer; transition: 0.2s; color: white; font-family: 'Pretendard', sans-serif; letter-spacing: 1px;}
 .quick-btn.q-start { background: linear-gradient(135deg, var(--brand-success), #059669); text-shadow: 0 1px 2px rgba(0,0,0,0.2); pointer-events: auto; }
 .quick-btn.q-finish { background: linear-gradient(135deg, var(--accent), #2563eb); text-shadow: 0 1px 2px rgba(0,0,0,0.2); pointer-events: auto; }
 .quick-btn:active { transform: scale(0.95) translateY(2px); box-shadow: var(--shadow-inner); }
@@ -229,15 +228,14 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .student-btn.alarm-blink .alarm-alert-text { display: block; animation: blinker 0.6s linear infinite; }
 @keyframes blinker { 50% { opacity: 0.2; } }
 
-.level-tag { position: absolute; top: 0; left: 50%; transform: translateX(-50%); font-family: 'Montserrat', sans-serif; font-weight: 900; z-index: 4; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 0 0 10px 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.15), inset 1px 1px 3px rgba(255,255,255,0.4); transition: all 0.3s; }
-#grid-active .student-btn .level-tag { font-size: 11px; padding: 4px 12px; }
-
-.level-PRE { border-color: var(--selena-yellow); background: linear-gradient(135deg, rgba(255, 215, 0, 0.45) 0%, rgba(255, 215, 0, 0.1) 100%); } .level-PRE .gauge-bg { background: rgba(255, 215, 0, 0.8); } .level-PRE .level-tag { background: var(--selena-yellow); color: #000; } 
-.level-BASIC { border-color: var(--selena-pink); background: linear-gradient(135deg, rgba(255, 0, 163, 0.35) 0%, rgba(255, 0, 163, 0.05) 100%); } .level-BASIC .gauge-bg { background: rgba(255, 0, 163, 0.7); } .level-BASIC .level-tag { background: var(--selena-pink); color: #fff; }
-.level-INTER { border-color: var(--selena-orange); background: linear-gradient(135deg, rgba(240, 112, 31, 0.35) 0%, rgba(240, 112, 31, 0.05) 100%); } .level-INTER .gauge-bg { background: rgba(240, 112, 31, 0.7); } .level-INTER .level-tag { background: var(--selena-orange); color: #fff; }
-.level-ADV { border-color: var(--selena-cyan); background: linear-gradient(135deg, rgba(33, 199, 250, 0.4) 0%, rgba(33, 199, 250, 0.1) 100%); } .level-ADV .gauge-bg { background: rgba(33, 199, 250, 0.75); } .level-ADV .level-tag { background: var(--selena-cyan); color: #fff; }
-.level-PREP { border-color: var(--selena-brown); background: linear-gradient(135deg, rgba(121, 85, 72, 0.3) 0%, rgba(121, 85, 72, 0.05) 100%); } .level-PREP .gauge-bg { background: rgba(121, 85, 72, 0.7); } .level-PREP .level-tag { background: var(--selena-brown); color: #fff; }
-.level-GUEST { border-color: #94a3b8; background: linear-gradient(135deg, rgba(148, 163, 184, 0.35) 0%, rgba(148, 163, 184, 0.05) 100%); } .level-GUEST .gauge-bg { background: rgba(148, 163, 184, 0.7); } .level-GUEST .level-tag { background: #94a3b8; color: #fff; }
+/* ⭐ 레벨 컬러 업데이트 (PREP31 컬러 변경됨) */
+.level-PRE { border-color: var(--selena-yellow); background: linear-gradient(135deg, rgba(255, 215, 0, 0.45) 0%, rgba(255, 215, 0, 0.1) 100%); } .level-PRE .gauge-bg { background: rgba(255, 215, 0, 0.8); } 
+.level-BASIC { border-color: var(--selena-pink); background: linear-gradient(135deg, rgba(255, 0, 163, 0.35) 0%, rgba(255, 0, 163, 0.05) 100%); } .level-BASIC .gauge-bg { background: rgba(255, 0, 163, 0.7); } 
+.level-INTER { border-color: var(--selena-orange); background: linear-gradient(135deg, rgba(240, 112, 31, 0.35) 0%, rgba(240, 112, 31, 0.05) 100%); } .level-INTER .gauge-bg { background: rgba(240, 112, 31, 0.7); } 
+.level-ADV { border-color: var(--selena-cyan); background: linear-gradient(135deg, rgba(33, 199, 250, 0.4) 0%, rgba(33, 199, 250, 0.1) 100%); } .level-ADV .gauge-bg { background: rgba(33, 199, 250, 0.75); } 
+/* 변경된 모카 브라운(PREP31) */
+.level-PREP { border-color: var(--selena-brown); background: linear-gradient(135deg, rgba(158, 116, 83, 0.35) 0%, rgba(158, 116, 83, 0.05) 100%); } .level-PREP .gauge-bg { background: rgba(158, 116, 83, 0.7); } 
+.level-GUEST { border-color: #94a3b8; background: linear-gradient(135deg, rgba(148, 163, 184, 0.35) 0%, rgba(148, 163, 184, 0.05) 100%); } .level-GUEST .gauge-bg { background: rgba(148, 163, 184, 0.7); } 
 
 .status-badge { position: absolute; top: 8px; right: 8px; font-size: 10px; font-weight: 800; padding: 3px 6px; border-radius: 6px; transition: 0.3s; box-shadow: 0 2px 6px rgba(0,0,0,0.1); z-index: 5; font-family: 'Pretendard', sans-serif; }
 .student-btn.attended .status-badge { background: var(--brand-success); color: white; border: 1px solid rgba(255,255,255,0.4); }
@@ -290,7 +288,7 @@ body[class*="theme-23"] ::-webkit-scrollbar-thumb, body[class*="theme-27"] ::-we
 .timer-bg-BASIC { background: rgba(255, 0, 163, 0.25); }
 .timer-bg-INTER { background: rgba(240, 112, 31, 0.25); }
 .timer-bg-ADV { background: rgba(33, 199, 250, 0.3); }
-.timer-bg-PREP { background: rgba(121, 85, 72, 0.2); }
+.timer-bg-PREP { background: rgba(158, 116, 83, 0.2); }
 .timer-bg-GUEST { background: rgba(148, 163, 184, 0.3); }
 
 .student-name-display { font-size: 26px; font-weight: 900; color: var(--custom-name-color); margin: 0 0 4px 0; text-shadow: var(--custom-name-shadow); letter-spacing: 1px; min-height: 32px;}
