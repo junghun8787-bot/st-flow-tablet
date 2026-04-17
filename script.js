@@ -89,7 +89,6 @@ const i18n = {
 window.onload = () => { loadData(); updateDateUI(); }; 
 setInterval(updateDateUI, 60000); 
 
-// 브라우저 닫을 때 백그라운드 상태 강제 저장
 window.addEventListener('beforeunload', () => { saveToStorage(); });
 
 function updateDateUI() {
@@ -266,7 +265,6 @@ function loadData() {
             logLeftItems = data.logLeftItems || []; logRightItems = data.logRightItems || []; 
             attendanceMap = new Map(data.attendance || []); finishedSet = new Set(data.finishedSet || []); assignOrderCounter = data.assignOrderCounter || 0; 
             
-            // 타이머 백그라운드 복구 로직
             timers = data.timerStates ? data.timerStates.map(ts => {
                 let t = { ...ts, interval: null, lastTick: ts.lastTick || 0 };
                 if (ts.isRunning && t.lastTick > 0) {
@@ -348,7 +346,7 @@ function addGuest() { const input = document.getElementById('guestNameInput'); c
 window.removeGuest = function(name) { if(confirm(`게스트 '${name}' 학생을 명단에서 완전히 삭제하시겠습니까?`)) { guestList = guestList.filter(g => g !== name); customStudentOrder = customStudentOrder.filter(g => g !== name); if(finishedSet.has(name)) finishedSet.delete(name); playUISound('cancel'); generateStudents(); } };
 window.cancelFromCard = function(name) { let tIdx = timers.findIndex(t => t.student === name); if (tIdx !== -1) cancelSession(tIdx); };
 
-// ⭐ 레벨 태그(level-tag) 제거됨, 시작/종료 버튼 아이콘 제거됨
+// ⭐ 레벨 태그(level-tag) 완전 삭제 & 중앙 시간 배지(.start-time-tag) 생성
 function generateStudents() {
     document.getElementById("grid-unassigned").innerHTML = "";
     document.getElementById("grid-active").innerHTML = "";
@@ -377,7 +375,11 @@ function generateStudents() {
             <button class="card-cancel-btn" onclick="event.stopPropagation(); cancelFromCard('${n}')">✖</button>
             <button class="guest-delete-btn" onclick="event.stopPropagation(); removeGuest('${n}')">✖</button>
             <div class="alarm-alert-text">${tLang.statusTimeUp}</div>
+            
+            <div class="start-time-tag" title="클릭하여 시작 시간 수정" onclick="event.stopPropagation(); editActiveStartTime('${n}')"></div>
+            
             <span class="name-text">${n}</span>
+            
             <div class="quick-controls">
                 <button class="quick-btn q-start" onclick="event.stopPropagation(); quickStart('${n}')">${tLang.quickStart}</button>
                 <button class="quick-btn q-finish" onclick="event.stopPropagation(); quickFinish('${n}')">${tLang.quickFinish}</button>
@@ -427,7 +429,7 @@ function generateStudents() {
     saveToStorage();
 }
 
-// ⭐ 수업중 텍스트 배지 제거, 시작 시간 배지 띄우기
+// ⭐ 상태에 따라 is-started 클래스를 토글하여 이름 애니메이션과 시간 표시 컨트롤
 function updateStudentStatus(name) {
     const tLang = i18n[currentLang];
     const btn = document.getElementById("btn-" + name); if (!btn) return;
@@ -438,16 +440,8 @@ function updateStudentStatus(name) {
     let badge = btn.querySelector(".status-badge");
     if (!badge) { badge = document.createElement("div"); badge.className = "status-badge"; btn.appendChild(badge); }
     badge.style.background = ""; badge.style.color = "";
-    badge.style.display = ""; 
     
-    let timeBadge = btn.querySelector(".start-time-badge");
-    if (!timeBadge) { 
-        timeBadge = document.createElement("div"); 
-        timeBadge.className = "start-time-badge"; 
-        timeBadge.title = "클릭하여 시작 시간 수정";
-        btn.appendChild(timeBadge); 
-    }
-    timeBadge.style.display = "none"; 
+    let timeTag = btn.querySelector(".start-time-tag");
 
     const gridUnassigned = document.getElementById("grid-unassigned");
     const gridActive = document.getElementById("grid-active");
@@ -455,29 +449,29 @@ function updateStudentStatus(name) {
 
     if (finishedSet.has(name)) { 
         btn.classList.add("finished"); badge.innerHTML = tLang.statusFinish;
+        if(timeTag) timeTag.style.display = "none";
         gridFinished.appendChild(btn);
     } else {
         let t = timers.find(x => x.student === name);
         if (t) {
+            // ⭐ 타이머가 돌아가고 있거나 시간이 끝났을 때 상단 시간 표시
+            if (t.startTimeStr && (t.interval || t.isOver)) {
+                if(timeTag) {
+                    timeTag.innerHTML = `⏰ ${t.startTimeStr}`;
+                    timeTag.style.display = "block";
+                }
+                btn.classList.add("is-started"); // 이름이 부드럽게 아래로 내려가도록 클래스 추가
+            } else {
+                if(timeTag) timeTag.style.display = "none";
+                btn.classList.remove("is-started");
+            }
+
             if (t.isOver) { 
                 btn.classList.add("alarm-blink", "attended"); badge.innerHTML = tLang.statusTimeUp; 
                 badge.style.background = "var(--brand-danger)"; badge.style.color = "white"; 
             } else if (t.interval) { 
                 btn.classList.add("playing", "attended"); 
-                
-                // 기존 수업중 배지는 완전히 숨깁니다
-                badge.style.display = "none"; 
-                
-                // 시간이 있으면 시간 배지 표시
-                if(t.startTimeStr) {
-                    timeBadge.innerHTML = `⏰ ${t.startTimeStr}`;
-                    timeBadge.style.display = "block";
-                    timeBadge.onclick = (e) => {
-                        e.stopPropagation();
-                        editActiveStartTime(name);
-                    };
-                }
-
+                badge.style.display = "none"; // '수업 중' 텍스트 완전 제거
             } else { 
                 btn.classList.add("attended"); badge.innerHTML = tLang.statusAssign; 
                 badge.style.background = "var(--brand-success)"; badge.style.color = "white"; 
@@ -485,13 +479,14 @@ function updateStudentStatus(name) {
             gridActive.appendChild(btn);
         } else { 
             badge.remove(); 
-            timeBadge.remove(); 
+            if(timeTag) timeTag.style.display = "none";
+            btn.classList.remove("is-started");
             gridUnassigned.appendChild(btn);
         }
     }
 }
 
-// ⭐ 커스텀 시간 입력 팝업창
+// ⭐ 커스텀 모달 시간 입력 창
 let timePromptCallback = null;
 
 function showTimePrompt(title, defaultTime, callback) {
@@ -719,7 +714,7 @@ function updateGauge(studentName, remaining, total) { const btn = document.getEl
 function formatTime(t) { return `${String(Math.floor(t / 60)).padStart(2, '0')}:${String(t % 60).padStart(2, '0')}`; }
 
 // ==========================================
-// 7. AUDIO & TTS (⭐ 한국어와 영어 쪼개서 읽기)
+// 7. AUDIO & TTS
 // ==========================================
 function initAudio() { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); }
 function triggerAlarm(id) { timers[id].isOver = true; updateStudentStatus(timers[id].student); updateBoxUI(id); let melodyType = parseInt(document.getElementById("melodyType").value); playMelody(melodyType); playAlarmTTS(timers[id].student); }
