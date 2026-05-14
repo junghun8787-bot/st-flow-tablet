@@ -471,3 +471,76 @@ select { cursor: pointer; text-align: left; }
 -------------------------------------------------------------------------- */
 .global-footer { text-align: center; padding: 20px 20px 30px 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 14px; font-weight: 600; letter-spacing: 1px; }
 .global-footer span { color: var(--accent); font-weight: 900; }
+/* ==========================================================================
+   [ 리스트 모드 (List Mode) 전용 스타일 ] - 태블릿 최적화
+   ========================================================================== */
+
+/* 1. 그리드를 세로 1열 리스트 형태로 변경 */
+body.list-mode-active #grid-active {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* 2. 학생 카드를 얇고 긴 가로 막대 형태로 변경 */
+body.list-mode-active #grid-active .student-btn {
+    height: 65px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    font-size: 20px;
+    border-radius: 12px;
+}
+
+/* 3. 이름 텍스트 위치 및 여백 (왼쪽 정렬) */
+body.list-mode-active #grid-active .student-btn .name-text {
+    margin: 0;
+    transform: none !important; /* 바둑판 모드의 상하 움직임 무효화 */
+    flex: 1; /* 남은 공간 꽉 채우기 */
+    text-align: left;
+    padding-left: 10px;
+}
+
+/* 4. X(취소) 버튼 위치 */
+body.list-mode-active #grid-active .student-btn .card-cancel-btn {
+    position: static;
+    margin-right: 10px;
+}
+
+/* 5. 시작 시간 태그 위치 조정 */
+body.list-mode-active #grid-active .student-btn .start-time-tag {
+    position: static;
+    transform: none;
+    padding: 4px 10px;
+    border-radius: 8px;
+    border: 2px solid var(--accent);
+    margin-right: 15px;
+    font-size: 13px;
+    box-shadow: none;
+}
+body.list-mode-active #grid-active .student-btn .start-time-tag:hover {
+    padding-top: 4px; /* 기존 상단 찰싹 효과 무효화 */
+}
+
+/* 6. 상태 뱃지 위치 */
+body.list-mode-active #grid-active .student-btn .status-badge {
+    position: static;
+    margin-right: 15px;
+    box-shadow: none;
+}
+
+/* 7. 퀵 컨트롤(시작/종료) 버튼 우측 가로 배치 */
+body.list-mode-active #grid-active .student-btn .quick-controls {
+    position: static;
+    width: auto;
+    padding: 0;
+    gap: 8px;
+}
+
+body.list-mode-active #grid-active .student-btn .quick-btn {
+    padding: 8px 16px;
+    font-size: 13px;
+    border-radius: 8px;
+    min-width: 60px;
+}
