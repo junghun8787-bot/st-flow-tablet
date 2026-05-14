@@ -2,13 +2,13 @@
   "name": "ST Flow",
   "short_name": "ST Flow",
   "start_url": "./index.html",
-  "display": "fullscreen",
+  "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#333333",
   "icons": [
     {
-      "src": "st flow.png",  
-      "sizes": "192x192",
+      "src": "st_flow.png",
+      "sizes": "any",
       "type": "image/png"
     }
   ]
