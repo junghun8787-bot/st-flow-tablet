@@ -472,75 +472,87 @@ select { cursor: pointer; text-align: left; }
 .global-footer { text-align: center; padding: 20px 20px 30px 20px; font-family: 'Montserrat', 'Pretendard', sans-serif; color: var(--text-muted); font-size: 14px; font-weight: 600; letter-spacing: 1px; }
 .global-footer span { color: var(--accent); font-weight: 900; }
 /* ==========================================================================
-   [ 리스트 모드 (List Mode) 전용 스타일 ] - 태블릿 최적화
+   [ 태블릿 전용 심플 리스트 모드 (책상 UI 완벽 숨김) ]
    ========================================================================== */
 
-/* 1. 그리드를 세로 1열 리스트 형태로 변경 */
+/* 1. 그리드를 세로 리스트 형태로 강제 변경 */
 body.list-mode-active #grid-active {
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
 }
 
-/* 2. 학생 카드를 얇고 긴 가로 막대 형태로 변경 */
+/* 2. PC버전의 빈 책상(roster-placeholder) 완전히 숨기기 */
+body.list-mode-active #grid-active .roster-placeholder {
+    display: none !important;
+}
+
+/* 3. 책상 슬롯의 껍데기(테두리/배경) 제거 및 높이 자동화 */
+body.list-mode-active #grid-active .roster-desk-slot {
+    height: auto !important;
+    min-height: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+/* 4. 학생 카드를 얇고 긴 가로 막대 형태로 변경 */
 body.list-mode-active #grid-active .student-btn {
-    height: 65px;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0 15px;
-    font-size: 20px;
-    border-radius: 12px;
+    position: relative !important; /* 기존 absolute 강제 해제 (핵심) */
+    height: 65px !important;
+    width: 100% !important;
+    flex-direction: row !important;
+    justify-content: flex-start !important;
+    align-items: center !important;
+    padding: 0 15px !important;
+    border-radius: 12px !important;
+    margin: 0 !important;
 }
 
-/* 3. 이름 텍스트 위치 및 여백 (왼쪽 정렬) */
+/* 5. 뱃지(레벨/학년) 왼쪽부터 가로 정렬 */
+body.list-mode-active #grid-active .student-btn .card-badge-group {
+    position: static !important;
+    margin-right: 15px !important;
+    transform: none !important;
+}
+
+/* 6. 이름 텍스트 위치 및 여백 (남는 공간 다 차지하게) */
 body.list-mode-active #grid-active .student-btn .name-text {
-    margin: 0;
-    transform: none !important; /* 바둑판 모드의 상하 움직임 무효화 */
-    flex: 1; /* 남은 공간 꽉 채우기 */
-    text-align: left;
-    padding-left: 10px;
+    margin: 0 !important;
+    font-size: 24px !important;
+    transform: none !important;
+    flex: 1 !important; 
+    text-align: left !important;
+    justify-content: flex-start !important;
 }
 
-/* 4. X(취소) 버튼 위치 */
+/* 7. X(취소) 버튼 숨기거나 왼쪽으로 이동 */
 body.list-mode-active #grid-active .student-btn .card-cancel-btn {
-    position: static;
-    margin-right: 10px;
+    position: static !important;
+    margin-right: 15px !important;
 }
 
-/* 5. 시작 시간 태그 위치 조정 */
-body.list-mode-active #grid-active .student-btn .start-time-tag {
-    position: static;
-    transform: none;
-    padding: 4px 10px;
-    border-radius: 8px;
-    border: 2px solid var(--accent);
-    margin-right: 15px;
-    font-size: 13px;
-    box-shadow: none;
-}
-body.list-mode-active #grid-active .student-btn .start-time-tag:hover {
-    padding-top: 4px; /* 기존 상단 찰싹 효과 무효화 */
+/* 8. 시작 시간 태그 위치 조정 */
+body.list-mode-active #grid-active .student-btn .start-time-badge {
+    position: static !important;
+    transform: none !important;
+    margin-right: 15px !important;
+    font-size: 14px !important;
 }
 
-/* 6. 상태 뱃지 위치 */
-body.list-mode-active #grid-active .student-btn .status-badge {
-    position: static;
-    margin-right: 15px;
-    box-shadow: none;
-}
-
-/* 7. 퀵 컨트롤(시작/종료) 버튼 우측 가로 배치 */
+/* 9. 퀵 컨트롤(시작/종료) 버튼 맨 우측에 가로 배치 */
 body.list-mode-active #grid-active .student-btn .quick-controls {
-    position: static;
-    width: auto;
-    padding: 0;
-    gap: 8px;
+    position: static !important;
+    width: auto !important;
+    padding: 0 !important;
+    gap: 8px !important;
+    bottom: auto !important;
 }
 
 body.list-mode-active #grid-active .student-btn .quick-btn {
-    padding: 8px 16px;
-    font-size: 13px;
-    border-radius: 8px;
-    min-width: 60px;
+    padding: 10px 20px !important;
+    font-size: 15px !important;
+    border-radius: 10px !important;
+    min-width: 70px !important;
 }
